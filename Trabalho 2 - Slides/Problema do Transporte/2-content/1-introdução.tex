@@ -1,0 +1,361 @@
+\begin{frame}
+\frametitle{Sumário}
+\tableofcontents
+\end{frame}
+
+\section{Problema do Transporte}
+
+\begin{frame}
+\frametitle{Definição do Problema do Transporte}
+
+\begin{columns}[T]
+    \begin{column}{0.6\textwidth}
+        \begin{itemize}
+            \item É uma classe especial dentro dos problemas de programação linear que trata da distribuição de mercadorias de várias origens para vários destinos;
+            \item O objetivo é encontrar um plano de transporte que \textbf{minimize o custo total} de envio, respeitando as restrições de \textbf{oferta e demanda}.
+        \end{itemize}
+    \end{column}
+
+    \begin{column}{0.5\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{images/Figura-1-Problema-do-transporte.png}
+    \end{column}
+\end{columns}
+\end{frame}
+
+
+\subsection{Exemplo Prático}
+
+\begin{frame}
+\frametitle{Exemplo Prático}
+\begin{itemize}
+    \item Uma empresa de calçados possui três fábricas e precisa distribuir sua produção para cinco lojas espalhadas pelo país. Cada fábrica possui uma capacidade máxima de produção semanal, e cada loja possui uma demanda específica a ser atendida.
+    \item O custo de transporte de um par de sapatos entre cada fábrica e cada loja é conhecido e varia conforme a distância e o tipo de transporte utilizado.
+    \item As capacidades de produção (oferta) das fábricas são: \textbf{200}, \textbf{300} e \textbf{250 pares}, respectivamente.
+    \item As demandas das lojas são: \textbf{150}, \textbf{180}, \textbf{100}, \textbf{200} e \textbf{120 pares}, respectivamente.
+\end{itemize}
+
+\begin{center}
+\textbf{Tabela de Custos de Transporte (R\$ por par)}
+\end{center}
+
+\begin{tabular}{c|ccccc|c}
+\hline
+ & L1 & L2 & L3 & L4 & L5 & Oferta \\ \hline
+F1 & 8 & 6 & 10 & 9 & 7 & 200 \\
+F2 & 9 & 12 & 13 & 7 & 5 & 300 \\
+F3 & 14 & 9 & 16 & 5 & 8 & 250 \\ \hline
+Demanda & 150 & 180 & 100 & 200 & 120 & \\ \hline
+\end{tabular}
+\end{frame}
+
+\begin{frame}
+\frametitle{Formulação do Problema}
+
+\textbf{Restrições de Oferta (Capacidade de Produção):}
+\[
+\begin{aligned}
+x_{11} + x_{12} + x_{13} + x_{14} + x_{15} &= 200 \\
+x_{21} + x_{22} + x_{23} + x_{24} + x_{25} &= 300 \\
+x_{31} + x_{32} + x_{33} + x_{34} + x_{35} &= 250
+\end{aligned}
+\]
+
+\textbf{Restrições de Demanda (Necessidade das Lojas):}
+\[
+\begin{aligned}
+x_{11} + x_{21} + x_{31} &= 150 \\
+x_{12} + x_{22} + x_{32} &= 180 \\
+x_{13} + x_{23} + x_{33} &= 100 \\
+x_{14} + x_{24} + x_{34} &= 200 \\
+x_{15} + x_{25} + x_{35} &= 120
+\end{aligned}
+\]
+
+\textbf{Restrições de não negatividade:}
+\[
+x_{ij} \ge 0 \quad \forall i,j
+\]
+\end{frame}
+
+\begin{frame}
+\frametitle{Interpretação do Problema}
+\begin{itemize}
+    \item O objetivo é determinar quantos pares de sapatos cada fábrica deve enviar para cada loja de forma a \textbf{minimizar o custo total de transporte}.
+    \item Todas as demandas devem ser atendidas, e nenhuma fábrica pode produzir mais do que sua capacidade máxima.
+    \item Esse tipo de problema é conhecido como \textbf{Problema do Transporte Balanceado}, pois a soma das ofertas é igual à soma das demandas:
+    \[
+    200 + 300 + 250 = 150 + 180 + 100 + 200 + 120 = 750
+    \]
+    \item Pode ser resolvido utilizando métodos como o \textbf{Canto Noroeste}, \textbf{Vogel}, \textbf{Menor Custo}
+\end{itemize}
+\end{frame}
+
+\subsection{Formulação Matemática}
+
+\begin{frame}
+\frametitle{Formulação Matemática}
+\begin{itemize}
+    \item \textbf{Variáveis de decisão:} 
+    \[
+    x_{ij} = \text{quantidade transportada da origem } i \text{ para o destino } j
+    \]
+    \item \textbf{Função objetivo:}
+    \[
+    \min Z = \sum_{i=1}^{m} \sum_{j=1}^{n} c_{ij}x_{ij}
+    \]
+    onde \(c_{ij}\) representa o custo de transporte por unidade.
+    \item \textbf{Restrições:}
+    \begin{align*}
+    \sum_{j=1}^{n} x_{ij} &= a_i, && \forall i = 1, \dots, m \quad \text{(oferta)}\\
+    \sum_{i=1}^{m} x_{ij} &= b_j, && \forall j = 1, \dots, n \quad \text{(demanda)}\\
+    x_{ij} &\ge 0, && \forall i,j
+    \end{align*}
+\end{itemize}
+\end{frame}
+
+\subsection{Modelando o Exemplo}
+
+\subsection{Métodos de Solução}
+
+\begin{frame}
+\frametitle{Métodos de Solução}
+\begin{itemize}
+    \item Método do Canto Noroeste;
+    \item Método do Custo Mínimo;
+    \item \textbf{Método de Vogel.}
+\end{itemize}
+\end{frame}
+
+\subsection{Método de Vogel}
+
+\begin{frame}
+\frametitle{Método de Vogel}
+
+\begin{itemize}
+    \item O \textbf{Método de Vogel} é uma técnica heurística usada para encontrar uma \textbf{solução inicial viável} para o problema do transporte.
+    \item Ele busca equilibrar \textbf{custo e penalidade}, tentando minimizar o custo total logo na alocação inicial.
+    \item O princípio é penalizar as escolhas caras: a cada etapa, calcula-se o quanto se “perde” ao não escolher a opção mais barata de cada linha e coluna.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Etapas do Método de Vogel}
+
+\begin{enumerate}
+    \item \textbf{Calcular as penalidades:}  
+    Para cada linha e coluna, determine a diferença entre os dois menores custos dessa linha/coluna.  
+    Essa diferença representa a \textbf{penalidade}.
+    
+    \item \textbf{Identificar a maior penalidade:}  
+    Escolha a linha ou coluna com a penalidade mais alta (ou seja, onde o erro seria mais caro se não for escolhida a menor rota).
+    
+    \item \textbf{Selecionar a menor célula de custo} nessa linha ou coluna e alocar:
+    \[
+    x_{ij} = \min(\text{oferta}_i, \text{demanda}_j)
+    \]
+    
+    \item \textbf{Atualizar as ofertas e demandas:}  
+    Subtraia o valor alocado e risque a linha ou coluna esgotada.
+    
+    \item \textbf{Repetir o processo} até que todas as ofertas e demandas sejam atendidas.
+\end{enumerate}
+\end{frame}
+
+\begin{frame}
+\frametitle{Exemplo - Método de Vogel}
+\begin{table}[]
+\centering
+\caption{Tabela de custos e demandas}
+\begin{tabular}{c|ccc|c}
+\hline
+ & D1 & D2 & D3 & Oferta \\ \hline
+O1 & 6 & 8 & 10 & 20 \\
+O2 & 7 & 11 & 11 & 15 \\
+O3 & 4 & 5 & 12 & 25 \\ \hline
+Demanda & 10 & 10 & 40 &  \\ \hline
+\end{tabular}
+\end{table}
+\end{frame}
+
+\begin{frame}
+\frametitle{Exercício - Método de Vogel}
+\begin{table}[]
+\centering
+\caption{Tabela de custos e demandas}
+\begin{tabular}{c|cccc|c}
+\hline
+ & D1 & D2 & D3 & D4 & Oferta \\ \hline
+O1 & 5 & 8 & 6 & 10 & 30 \\
+O2 & 9 & 7 & 4 & 8 & 40 \\
+O3 & 6 & 5 & 8 & 9 & 50 \\ \hline
+Demanda & 20 & 30 & 25 & 45 & \\ \hline
+\end{tabular}
+\end{table}
+\begin{block}{Enunciado}
+Determine o plano de transporte ótimo utilizando o \textbf{Método de Aproximação de Vogel}, de modo a minimizar o custo total.
+\end{block}
+\end{frame}
+
+\begin{frame}
+\frametitle{Características do Método de Vogel}
+\begin{itemize}
+    \item Fornece soluções iniciais geralmente \textbf{mais próximas da ótima} do que o Método do Canto Noroeste ou o do Custo Mínimo;
+    \item Requer cálculos adicionais, mas reduz o número de iterações posteriores no método de otimização (Simplex);
+    \item É amplamente utilizado em problemas de transporte reais devido ao seu \textbf{bom equilíbrio entre precisão e esforço computacional}.
+\end{itemize}
+\end{frame}
+
+\subsection{Método u-v (MODI)}
+
+\begin{frame}
+\frametitle{Método u-v (MODI)}
+
+\begin{itemize}
+    \item Também conhecido como \textbf{Método MODI} (\textit{Modified Distribution Method});
+    \item É utilizado para \textbf{verificar a otimalidade} de uma solução viável inicial do problema do transporte;
+    \item Permite identificar se é possível \textbf{reduzir o custo total} ajustando a alocação das variáveis não básicas;
+    \item É uma forma simplificada de aplicar o \textbf{Simplex} ao problema do transporte.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Ideia do Método u-v}
+
+\begin{columns}[T]
+\begin{column}{0.55\textwidth}
+\begin{itemize}
+    \item O método se baseia na atribuição de dois conjuntos de variáveis:
+    \[
+    u_i \text{ (para as origens) e } v_j \text{ (para os destinos)}
+    \]
+    \item Para cada célula básica \( (i,j) \), temos:
+    \[
+    c_{ij} = u_i + v_j
+    \]
+    \item As células não básicas são então avaliadas pelo \textbf{custo reduzido}:
+    \[
+    \Delta_{ij} = c_{ij} - (u_i + v_j)
+    \]
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}
+\frametitle{Critério de Otimalidade}
+
+\begin{block}{Condição de Ótimo}
+Uma solução é \textbf{ótima} se e somente se:
+\[
+\Delta_{ij} \geq 0 \quad \forall (i,j) \text{ não básicos.}
+\]
+\end{block}
+
+\begin{itemize}
+    \item Se todos os \(\Delta_{ij}\) forem positivos ou nulos, o custo total atual é mínimo;
+    \item Caso exista algum \(\Delta_{ij} < 0\), há oportunidade de melhoria no custo, a solução ainda não é ótima;
+    \item Nesse caso, deve-se ajustar a alocação construindo um \textbf{ciclo fechado} para redistribuir as quantidades.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Etapas do Método MODI}
+
+\begin{enumerate}
+    \item \textbf{Obter uma solução inicial viável} (ex: Método de Vogel);
+    \item \textbf{Calcular os valores de \(u_i\) e \(v_j\):}
+    \begin{itemize}
+        \item Escolha arbitrariamente \(u_1 = 0\);
+        \item Para cada célula básica, use \(c_{ij} = u_i + v_j\) para determinar os demais valores;
+    \end{itemize}
+    \item \textbf{Calcular os custos reduzidos:}
+    \[
+    \Delta_{ij} = c_{ij} - (u_i + v_j)
+    \]
+    \item \textbf{Verificar a otimalidade:}
+    \begin{itemize}
+        \item Se todos os \(\Delta_{ij} \ge 0\), pare, a solução é ótima;
+        \item Caso contrário, vá para o próximo passo.
+    \end{itemize}
+\end{enumerate}
+\end{frame}
+
+\begin{frame}
+\frametitle{Etapas do Método MODI (continuação)}
+
+\begin{enumerate}
+    \setcounter{enumi}{4}
+    \item \textbf{Identificar a célula com o menor \(\Delta_{ij}\):}
+    \begin{itemize}
+        \item Essa será a célula \textbf{candidata a entrar na base};
+    \end{itemize}
+    \item \textbf{Construir o ciclo fechado:}
+    \begin{itemize}
+        \item Alterne entre células básicas e não básicas, formando um caminho fechado;
+        \item Sinalize os movimentos com \(+\) e \(-\);
+    \end{itemize}
+    \item \textbf{Atualizar as alocações:}
+    \[
+    x_{ij} = x_{ij} \pm \theta
+    \]
+    onde \(\theta\) é o menor valor das células marcadas com \(-\);
+    \item \textbf{Repetir o processo} até que todos os \(\Delta_{ij} \ge 0\).
+\end{enumerate}
+\end{frame}
+
+\begin{frame}
+\frametitle{Exemplo - Método u-v (MODI)}
+
+\begin{table}[]
+\centering
+\caption{Tabela de custos e solução inicial (via Vogel)}
+\begin{tabular}{c|ccc|c}
+\hline
+ & D1 & D2 & D3 & Oferta \\ \hline
+O1 & 6 & 8 & 10 & 20 \\
+O2 & 7 & 11 & 11 & 15 \\
+O3 & 4 & 5 & 12 & 25 \\ \hline
+Demanda & 10 & 10 & 40 &  \\ \hline
+\end{tabular}
+\end{table}
+
+\begin{block}{Objetivo}
+A partir da solução inicial obtida pelo Método de Vogel, aplique o \textbf{Método MODI} para verificar se a solução é ótima e, se necessário, encontrar uma solução de custo menor.
+\end{block}
+\end{frame}
+
+\begin{frame}
+\frametitle{Vantagens do Método u-v (MODI)}
+
+\begin{itemize}
+    \item É o \textbf{método mais eficiente} para testar e melhorar soluções do problema do transporte;
+    \item Evita o uso completo do \textbf{Simplex}, tornando o processo mais direto;
+    \item Facilita a visualização da estrutura do problema;
+    \item Pode ser facilmente implementado em planilhas eletrônicas ou softwares de otimização.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Resumo do Método u-v (MODI)}
+
+\begin{block}{Passos Principais}
+\begin{enumerate}
+    \item Obtenha uma solução inicial viável (Vogel, Canto Noroeste, etc.);
+    \item Calcule \(u_i\) e \(v_j\) com base nas células básicas;
+    \item Determine \(\Delta_{ij}\) para as não básicas;
+    \item Verifique se há \(\Delta_{ij} < 0\);
+    \item Ajuste as alocações por ciclos fechados até atingir a otimalidade.
+\end{enumerate}
+\end{block}
+\end{frame}
+
+\subsection{Conclusão}
+\begin{frame}
+\frametitle{Conclusão}
+\begin{itemize}
+    \item O problema do transporte é uma aplicação clássica da programação linear com grande relevância prática;
+    \item Seu estudo auxilia na compreensão de modelos de otimização com restrições de capacidade e custo;
+    \item Métodos como o de Vogel e o MODI permitem soluções eficientes e economicamente viáveis.
+\end{itemize}
+\end{frame}
