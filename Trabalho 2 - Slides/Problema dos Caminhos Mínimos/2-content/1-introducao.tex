@@ -1,0 +1,198 @@
+\begin{frame}
+\frametitle{Sumário}
+\tableofcontents
+\end{frame}
+
+\section{Introdução e Definição do Problema}
+
+% SLIDE 2: O GANCHO
+\begin{frame}
+\frametitle{Qual é o melhor caminho?}
+
+\begin{columns}[T]
+    \begin{column}{0.6\textwidth}
+        \begin{block}{A Pergunta Intuitiva}
+        Como o Google Maps sabe a rota mais rápida para chegar na FCT?
+        \end{block}
+        \begin{itemize}
+            \item É o caminho mais rápido (menor tempo)?
+            \item É o caminho mais curto (menor distância)?
+            \item É o caminho mais barato (sem pedágios)?
+        \end{itemize}
+        \vspace{0.5cm}
+        A ideia central é modelar o mapa como um \textbf{grafo} e atribuir \textbf{custos} às ruas.
+    \end{column}
+
+    \begin{column}{0.4\textwidth}
+        \centering
+        % Espaço reservado para a imagem.
+        % Quando tiver a imagem, descomente a linha abaixo:
+        % \includegraphics[width=\linewidth]{images/google-maps.png}
+        \vspace{2cm}
+        \textit{(Imagem do Google Maps/Waze aqui)}
+    \end{column}
+\end{columns}
+\end{frame}
+
+% SLIDE 3: APLICAÇÕES PRÁTICAS
+\begin{frame}
+\frametitle{Onde o PCM se Esconde?}
+\begin{itemize}
+    \item \textbf{Redes de Computadores:} Roteamento de pacotes na internet (Protocolo OSPF) — o custo é a latência.
+    \item \textbf{Logística e Transporte:} Otimização de rotas de entrega (Correios, Mercado Livre) — o custo é a distância ou tempo.
+    \item \textbf{Finanças (Avançado):} Detecção de oportunidades de arbitragem em mercados (encontrar ciclos de custo negativo).
+    \item \textbf{Análise de Redes Sociais:} Medir o "grau de separação" entre duas pessoas.
+\end{itemize}
+\end{frame}
+
+% SLIDE 4: DEFINIÇÃO FORMAL - PARTE 1
+\begin{frame}
+\frametitle{Traduzindo o Mapa para a Matemática}
+
+\begin{columns}[T]
+    \begin{column}{0.6\textwidth}
+        \begin{itemize}
+            \item \textbf{Grafo (ou Dígrafo):} $G = (V, E)$
+            \item \textbf{$V$ (Vértices):} O conjunto de "nós" (ex: cidades, roteadores).
+            \item \textbf{$E$ (Arestas):} O conjunto de "conexões" (ex: ruas, cabos).
+            \item \textbf{Grafo Ponderado:} Cada aresta $(i, j) \in E$ possui um \textbf{peso} (ou custo) $w_{ij}$ associado.
+        \end{itemize}
+    \end{column}
+
+    \begin{column}{0.4\textwidth}
+        \centering
+        % Diagrama do Grafo usando TikZ (se não funcionar, avise)
+        \begin{tikzpicture}[scale=0.8, every node/.style={circle, draw, minimum size=0.6cm}]
+            \node (A) at (0,0) {A};
+            \node (B) at (2.5,0) {B};
+            \node (C) at (0,-2) {C};
+            \node (D) at (2.5,-2) {D};
+            \draw[->] (A) -- node[above, font=\small]{5} (B);
+            \draw[->] (A) -- node[left, font=\small]{10} (C);
+            \draw[->] (B) -- node[right, font=\small]{3} (C);
+            \draw[->] (B) -- node[right, font=\small]{7} (D);
+        \end{tikzpicture}
+    \end{column}
+\end{columns}
+\end{frame}
+
+% SLIDE 5: DEFINIÇÃO FORMAL - PARTE 2
+\begin{frame}
+\frametitle{O Problema de Caminhos Mínimos}
+
+\begin{itemize}
+    \item \textbf{Caminho:} Uma sequência de arestas que conecta um nó origem $s$ a um nó destino $t$.
+    \begin{itemize}
+        \item Ex: $P = (A \to B \to D)$
+    \end{itemize}
+    \item \textbf{Custo do Caminho:} A soma dos pesos $w_{ij}$ das arestas que formam o caminho.
+    \begin{itemize}
+        \item Ex: $Custo(P) = w_{AB} + w_{BD}$
+    \end{itemize}
+\end{itemize}
+  
+  % --- A CORREÇÃO É AQUI ---
+  \begin{block}{O Grande Objetivo}
+    Dado um grafo ponderado $G$, um nó origem $s$ e um nó destino $t$, encontrar o caminho $P$ de $s$ para $t$ que \textbf{minimiza o custo total}.
+    \[
+      P^* = \arg\min_{P:\, s\to t} \sum_{(i,j)\in P} w_{ij}
+    \]
+  \end{block}
+  % --- FIM DA CORREÇÃO ---
+  
+  \begin{alertblock}{Observação Importante}
+    Os algoritmos que vamos estudar (Dijkstra, Bellman-Ford) resolvem o problema de \textbf{Origem Única (SSSP)}: encontram o caminho mínimo de $s$ para \textbf{TODOS} os outros nós.
+  \end{alertblock}
+\end{frame}
+
+% --- MÓDULO 2: MODELO MATEMÁTICO (PL) ---
+
+\section{Modelo Matemático (PL)}
+
+% SLIDE 6: VARIÁVEIS E FUNÇÃO OBJETIVO
+\begin{frame}
+\frametitle{Modelo PL: Variáveis e Função Objetivo}
+
+\begin{block}{Variáveis de Decisão}
+Definimos $x_{ij}$ como a quantidade de fluxo enviado pela aresta $(i, j)$.
+\begin{itemize}
+    \item $x_{ij} = 1$ se a aresta $(i, j)$ faz parte do caminho mínimo.
+    \item $x_{ij} = 0$ caso contrário.
+\end{itemize}
+\end{block}
+
+\begin{block}{Função Objetivo (Minimizar o Custo Total)}
+Queremos minimizar a soma dos custos de todas as arestas usadas. O custo de usar a aresta $(i, j)$ é $w_{ij}$.
+\[
+\min Z = \sum_{(i,j) \in E} w_{ij} \cdot x_{ij}
+\]
+\end{block}
+\end{frame}
+
+% SLIDE 7: RESTRIÇÕES (PARTE 1)
+\begin{frame}
+\frametitle{Modelo PL: Restrições de Conservação de Fluxo}
+
+Para cada nó $k$ no grafo, o fluxo que "entra" deve ser igual ao fluxo que "sai", com exceção da origem e do destino.
+
+\vspace{0.5cm}
+
+\textbf{1. Nó Origem ($s$):}
+\begin{itemize}
+    \item O nó $s$ \textbf{envia 1} unidade de fluxo.
+    \item Fluxo que Sai - Fluxo que Entra = 1
+    \[
+    \sum_{j:(s,j) \in E} x_{sj} - \sum_{i:(i,s) \in E} x_{is} = 1
+    \]
+\end{itemize}
+
+\vspace{0.5cm}
+
+\textbf{2. Nó Destino ($t$):}
+\begin{itemize}
+    \item O nó $t$ \textbf{recebe 1} unidade de fluxo.
+    \item Fluxo que Sai - Fluxo que Entra = -1
+    \[
+    \sum_{j:(t,j) \in E} x_{tj} - \sum_{i:(i,t) \in E} x_{it} = -1
+    \]
+\end{itemize}
+\end{frame}
+
+% SLIDE 8: RESTRIÇÕES (PARTE 2)
+\begin{frame}
+\frametitle{Modelo PL: Restrições de Conservação de Fluxo}
+
+\textbf{3. Nós Intermediários ($k \neq s, t$):}
+\begin{itemize}
+    \item Tudo que entra deve sair (conservação pura).
+    \item Fluxo que Sai - Fluxo que Entra = 0
+    \[
+    \sum_{j:(k,j) \in E} x_{kj} - \sum_{i:(i,k) \in E} x_{ik} = 0
+    \]
+\end{itemize}
+
+\vspace{1cm}
+
+\begin{block}{4. Restrição de Não-Negatividade}
+Não podemos enviar fluxo negativo.
+\[ 
+x_{ij} \ge 0 \quad \forall (i,j) \in E 
+\]
+\end{block}
+\end{frame}
+
+% SLIDE 9: A MÁGICA DA PROGRAMAÇÃO LINEAR
+\begin{frame}
+\frametitle{Modelo PL: A Mágica da Integridade}
+
+\begin{itemize}
+    \item \textbf{Pergunta:} Nós não deveríamos forçar $x_{ij}$ a ser um número inteiro ($0$ ou $1$)?
+    \[
+    x_{ij} \in \{0, 1\} \quad \text{(Programação Inteira)}
+    \]
+    \item \textbf{Resposta:} Não precisa!
+    \item Este tipo de problema de rede (Fluxo de Custo Mínimo) tem uma propriedade especial chamada \textbf{Total Unimodularidade}.
+    \item \textbf{O que importa:} Essa propriedade \textbf{garante} que, se a oferta (1) e a demanda (-1) são inteiras, a solução ótima do problema de Programação Linear (com $x_{ij} \ge 0$) \textbf{já será inteira}.
+    \item Por isso, podemos resolvê-lo eficientemente como um PL comum.
+\end{itemize}
+\end{frame}
