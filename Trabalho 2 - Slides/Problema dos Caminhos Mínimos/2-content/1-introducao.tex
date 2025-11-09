@@ -27,9 +27,7 @@
         \centering
         % Espaço reservado para a imagem.
         % Quando tiver a imagem, descomente a linha abaixo:
-        % \includegraphics[width=\linewidth]{images/google-maps.png}
-        \vspace{2cm}
-        \textit{(Imagem do Google Maps/Waze aqui)}
+        \includegraphics[width=\linewidth]{images/googlemaps.png}
     \end{column}
 \end{columns}
 \end{frame}
@@ -194,5 +192,174 @@ x_{ij} \ge 0 \quad \forall (i,j) \in E
     \item Este tipo de problema de rede (Fluxo de Custo Mínimo) tem uma propriedade especial chamada \textbf{Total Unimodularidade}.
     \item \textbf{O que importa:} Essa propriedade \textbf{garante} que, se a oferta (1) e a demanda (-1) são inteiras, a solução ótima do problema de Programação Linear (com $x_{ij} \ge 0$) \textbf{já será inteira}.
     \item Por isso, podemos resolvê-lo eficientemente como um PL comum.
+\end{itemize}
+\end{frame}
+
+% --- MÓDULO 3: MÉTODOS DE RESOLUÇÃO ---
+
+\section{Métodos de Resolução}
+
+% SLIDE 11: INTRODUÇÃO AOS ALGORITMOS
+\begin{frame}
+\frametitle{Módulo 3: Métodos de Resolução}
+
+\begin{itemize}
+    \item Embora o modelo de PL seja academicamente correto, ele não é a forma mais \textit{eficiente} de resolver o Problema de Caminhos Mínimos na prática.
+    \item Na prática, usamos algoritmos especializados em grafos que são muito mais rápidos.
+    \item Vamos focar em dois algoritmos fundamentais:
+    \begin{enumerate}
+        \item \textbf{Algoritmo de Dijkstra}
+        \item \textbf{Algoritmo de Bellman-Ford}
+    \end{enumerate}
+\end{itemize}
+\end{frame}
+
+% SLIDE 12: ALGORITMO DE DIJKSTRA (CONCEITO)
+\begin{frame}
+\frametitle{Algoritmo de Dijkstra}
+
+\begin{block}{O Conceito}
+Uma abordagem "Gulosa" (Greedy). A cada passo, ele escolhe o caminho que \textit{parece} ser o melhor (o mais curto) e expande a partir dele.
+\end{block}
+
+\begin{alertblock}{Restrição Crítica}
+O Algoritmo de Dijkstra \textbf{NÃO FUNCIONA} se o grafo tiver arestas com \textbf{pesos negativos}.
+\end{alertblock}
+
+\begin{itemize}
+    \item \textbf{Ideia Principal:}
+    \begin{itemize}
+        \item Mantém um conjunto de nós "visitados" e as distâncias até eles.
+        \item Começa na origem $s$ (distância 0) e todos os outros com distância $\infty$.
+        \item Em cada passo, visita o nó \textbf{não-visitado} com a \textbf{menor distância} atual.
+        \item Ao visitar um nó, "relaxa" as arestas para seus vizinhos (tenta encontrar um caminho mais curto para eles).
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+% SLIDE 13: ALGORITMO DE DIJKSTRA (EXEMPLO)
+\begin{frame}
+\frametitle{Exemplo Prático: Algoritmo de Dijkstra}
+
+\begin{columns}[T]
+    \begin{column}{0.4\textwidth}
+        \centering
+        % O mesmo diagrama que usamos antes
+        \begin{tikzpicture}[scale=0.8, every node/.style={circle, draw, minimum size=0.6cm}]
+            \node (A) at (0,0) {A};
+            \node (B) at (2.5,0) {B};
+            \node (C) at (0,-2) {C};
+            \node (D) at (2.5,-2) {D};
+            \draw[->] (A) -- node[above, font=\small]{5} (B);
+            \draw[->] (A) -- node[left, font=\small]{10} (C);
+            \draw[->] (B) -- node[right, font=\small]{3} (C);
+            \draw[->] (B) -- node[right, font=\small]{7} (D);
+        \end{tikzpicture}
+        \vspace{1cm}
+        \textbf{Origem: A}
+    \end{column}
+    
+    \begin{column}{0.6\textwidth}
+        \textbf{Passo a Passo (Distâncias):}
+        
+        \begin{table}[]
+        \begin{tabular}{c|c c c c}
+        \textbf{Nó Visitado} & $d(A)$ & $d(B)$ & $d(C)$ & $d(D)$ \\ \hline
+        Inicial & \textbf{0} & $\infty$ & $\infty$ & $\infty$ \\
+        A & 0 & 5 & 10 & $\infty$ \\
+        B & 0 & 5 & 8 & 12 \\
+        C & 0 & 5 & 8 & 12 \\
+        D & 0 & 5 & 8 & 12 \\
+        \end{tabular}
+        \end{table}
+        \vspace{0.5cm}
+        
+        \begin{itemize}
+            \item \textbf{Caminho Mínimo A $\to$ C:} $A \to B \to C$ (Custo 8)
+            \item \textbf{Caminho Mínimo A $\to$ D:} $A \to B \to D$ (Custo 12)
+        \end{itemize}
+    \end{column}
+\end{columns}
+\end{frame}
+
+% SLIDE 14: ALGORITMO DE BELLMAN-FORD (CONCEITO)
+\begin{frame}
+\frametitle{Algoritmo de Bellman-Ford}
+
+\begin{block}{O Conceito}
+Uma abordagem de \textbf{Programação Dinâmica}. Em vez de ser "guloso", ele é "pessimista" e re-calcula tudo várias vezes.
+\end{block}
+
+\begin{alertblock}{Principais Vantagens}
+\begin{itemize}
+    \item \textbf{Funciona com pesos negativos.}
+    \item Consegue \textbf{detectar ciclos negativos} (um loop no grafo que, se percorrido, reduz o custo infinitamente).
+\end{itemize}
+\end{alertblock}
+
+\begin{itemize}
+    \item \textbf{Ideia Principal (Parte 1):}
+    \begin{itemize}
+        \item Repete o processo de "relaxar" \textbf{TODAS} as arestas do grafo, um total de $|V|-1$ vezes (onde $|V|$ é o número de nós).
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+% ---
+
+% SLIDE 15: ALGORITMO DE BELLMAN-FORD (DETECÇÃO DE CICLO)
+\begin{frame}
+\frametitle{Algoritmo de Bellman-Ford}
+
+\begin{itemize}
+    \item \textbf{Ideia Principal (Parte 2):}
+    \begin{itemize}
+        \item \textbf{Por que $|V|-1$ vezes?} Porque o maior caminho mínimo possível *sem* um ciclo só pode ter, no máximo, $|V|-1$ arestas.
+        \item Após as $|V|-1$ repetições, o algoritmo faz uma \textbf{última checagem} (uma $|V|$-ésima passagem).
+        \item Se ainda for possível "relaxar" alguma aresta nessa última passagem, o algoritmo para e avisa: \textbf{"Ciclo Negativo Detectado!"}
+    \end{itemize}
+\end{itemize}
+
+\begin{block}{Aplicação de Ciclo Negativo}
+Isso é usado em finanças para detectar \textbf{arbitragem}: trocar Moeda A $\to$ Moeda B $\to$ Moeda C $\to$ Moeda A e sair com mais dinheiro do que começou.
+\end{block}
+\end{frame}
+
+% SLIDE 16: COMPARAÇÃO DIJKSTRA VS BELLMAN-FORD
+\begin{frame}
+\frametitle{Comparativo: Dijkstra vs. Bellman-Ford}
+
+\begin{table}[]
+\centering
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Característica} & \textbf{Algoritmo de Dijkstra} & \textbf{Algoritmo de Bellman-Ford} \\ \hline
+\textbf{Abordagem} & Gulosa (Greedy) & Programação Dinâmica \\
+\textbf{Pesos Negativos?} & \textbf{Não} (falha) & \textbf{Sim} \\
+\textbf{Ciclos Negativos?} & Não (não detecta) & \textbf{Sim} (detecta) \\
+\textbf{Complexidade} & $O(E \log V)$ ou $O(V^2)$ & $O(V \cdot E)$ \\
+\textbf{Quando usar?} & Grafos sem pesos negativos & Grafos com pesos negativos \\
+ & (Ex: GPS, redes OSPF) & (Ex: Detecção de arbitragem) \\ \hline
+\end{tabular}
+\end{table}
+
+\vspace{1cm}
+\begin{block}{Conclusão}
+A escolha do algoritmo depende da natureza do problema. Dijkstra é mais rápido, mas Bellman-Ford é mais robusto e "seguro" para grafos que podem ter custos negativos.
+\end{block}
+\end{frame}
+
+% --- MÓDULO 4: REFERÊNCIAS BIBLIOGRÁFICAS ---
+
+\section{Referências Bibliográficas}
+
+\begin{frame}
+\frametitle{Referências Bibliográficas}
+
+\begin{itemize}
+    \item BAZARAA, M.S., JARVIS, J.J. e SHERALI, H.D. \textit{Linear Programming and Network Flows}, John Wiley \& Sons, 1990.
+    \item GOLDBARG, M. C. e LUNA, H. P. L., \textit{Otimização Combinatória e Programação Linear: Modelos e Algoritmos}, Campus, 2000.
+    \item ARENALES, M. N.; et al. \textit{Pesquisa operacional}. 2. ed. Rio de Janeiro: Elsevier, c2015.
+    \item BELFIORE, Patrícia; FÁVERO, Luiz Paulo. \textit{Pesquisa operacional para cursos de engenharia}. Rio de Janeiro: Elsevier Brasil, 2013.
 \end{itemize}
 \end{frame}
