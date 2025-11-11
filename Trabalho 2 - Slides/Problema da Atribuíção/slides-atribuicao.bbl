@@ -1,0 +1,56 @@
+\begin{thebibliography}{10}
+
+\bibitem{burkard2009assignment}
+Rainer Burkard, Mauro Dell'Amico, and Silvano Martello.
+\newblock Assignment problems.
+\newblock {\em Society for Industrial and Applied Mathematics}, 2009.
+
+\bibitem{carpaneto1988algorithm}
+Giorgio Carpaneto and Paolo Toth.
+\newblock Algorithm 548: Solution of the assignment problem.
+\newblock {\em ACM Transactions on Mathematical Software}, 14(2):146--148,
+  1988.
+
+\bibitem{ortoolsAssignment}
+{Google Optimization Tools}.
+\newblock {\em Assignment -- Google OR-Tools Documentation}, 2024.
+\newblock Acesso em: 11 nov. 2025.
+
+\bibitem{hillier2015introduction}
+Frederick~S. Hillier and Gerald~J. Lieberman.
+\newblock {\em Introduction to Operations Research}.
+\newblock McGraw-Hill Education, 10 edition, 2015.
+
+\bibitem{kuhn1955hungarian}
+Harold~W. Kuhn.
+\newblock The hungarian method for the assignment problem.
+\newblock {\em Naval Research Logistics Quarterly}, 2(1-2):83--97, 1955.
+
+\bibitem{munkres1957algorithms}
+James Munkres.
+\newblock Algorithms for the assignment and transportation problems.
+\newblock {\em Journal of the Society for Industrial and Applied Mathematics},
+  5(1):32--38, 1957.
+
+\bibitem{papadimitriou1998combinatorial}
+Christos~H. Papadimitriou and Kenneth Steiglitz.
+\newblock {\em Combinatorial Optimization: Algorithms and Complexity}.
+\newblock Dover Publications, 1998.
+
+\bibitem{santos2018metodos}
+Carlos Eduardo Silva~dos Santos.
+\newblock {\em Métodos Húngaro e Aplicações}.
+\newblock Dissertação de mestrado, Universidade Federal Rural de Pernambuco,
+  Recife, Brasil, 2018.
+
+\bibitem{Silva2017problema}
+João Silva and Maria Oliveira.
+\newblock Resolução de um problema de atribuição usando algoritmo húngaro.
+\newblock In {\em Anais do CNMAC}. SBMAC, 2017.
+
+\bibitem{taha2017operations}
+Hamdy~A. Taha.
+\newblock {\em Operations Research: An Introduction}.
+\newblock Pearson, 10 edition, 2017.
+
+\end{thebibliography}

@@ -1,0 +1,364 @@
+\documentclass{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazilian]{babel}
+\usetheme{Madrid}
+
+% Metadados do título
+\title{Problema da Atribuição}
+\author{Igor J. Rodrigues; Leonardo S. Coradeli; Lucas V. C. Ikeda; Marco V. M. Faria}
+\institute{Universidade Estadual Paulista ``Júlio de Mesquita Filho''\\Faculdade de Ciência e Tecnologia}
+\date{November 8, 2025}
+
+\begin{document}
+
+\logo{\includegraphics[height=0.5cm]{images/unesp.png}}
+
+\frame{\titlepage}
+
+% Slide 2: Definição
+\begin{frame}{Definição}
+  O problema da atribuição consiste em alocar um conjunto de agentes a um conjunto de tarefas, de modo que cada agente execute exatamente uma tarefa e vice-versa, minimizando o custo total dessa alocação.
+
+  \vspace{0.5cm}
+  \textbf{Exemplo:} Atribuir motoristas a rotas minimizando o tempo total de deslocamento.
+\end{frame}
+
+% Slide 3: Modelo Matemático
+\begin{frame}{Modelo Matemático}
+  \textbf{Variáveis de decisão:}
+  $x_{ij} = \begin{cases}1 & \textrm{se o agente $i$ é atribuído à tarefa $j$} \\ 0 & \textrm{caso contrário} \end{cases}$
+  \vspace{0.4cm}
+
+  \textbf{Função objetivo:}
+  \[
+    \min \sum_{i=1}^n \sum_{j=1}^n c_{ij} x_{ij}
+  \]
+
+  \textbf{Restrições:}
+  \[
+    \sum_{j=1}^n x_{ij} = 1 ~ \forall i \qquad
+    \sum_{i=1}^n x_{ij} = 1 ~ \forall j
+  \]
+
+  \textbf{Variáveis binárias:} $x_{ij} \in \{0, 1\}$
+\end{frame}
+
+% Slide 4: Representação em Tabela
+\begin{frame}{Representação em tabela}
+  Cada célula $c_{ij}$ representa o custo de atribuir o agente $i$ à tarefa $j$:
+
+  \begin{center}
+    \begin{tabular}{|c|c|c|c|}
+      \hline
+       & Tarefa 1 & Tarefa 2 & Tarefa 3 \\
+      \hline
+      Agente 1 & 15 & 20 & 17 \\
+      Agente 2 & 13 & 18 & 21 \\
+      Agente 3 & 19 & 14 & 16 \\
+      \hline
+    \end{tabular}
+  \end{center}
+  \vspace{0.3cm}
+  Esta matriz é a base para a construção do modelo matemático do problema.
+\end{frame}
+
+% Slide 5: Obtenção de Solução
+\begin{frame}{Obtenção de uma Solução}
+  Para obter uma solução ótima, identificamos a combinação de atribuições agente-tarefa que leva ao menor custo total.
+
+  \textbf{Exemplo prático:}
+  \begin{itemize}
+    \item Atribua os agentes às tarefas considerando cada combinação e calcule o custo total.
+    \item Compare os custos e escolha a menor soma.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Somas das Atribuições Possíveis}
+Considerando a matriz de custos:
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|}
+  \hline
+   & Tarefa 1 & Tarefa 2 & Tarefa 3 \\
+  \hline
+  Agente 1 & 15 & 20 & 17 \\
+  Agente 2 & 13 & 18 & 21 \\
+  Agente 3 & 19 & 14 & 16 \\
+  \hline
+\end{tabular}
+\end{center}
+
+Possíveis somas (cada agente faz só uma tarefa):
+
+\begin{itemize}
+  \item Atribuição 1: 15 + 18 + 16 = 49
+  \item Atribuição 2: 15 + 21 + 14 = 50
+  \item Atribuição 3: 17 + 13 + 14 = 44
+  \item Atribuição 4: 17 + 18 + 19 = 54
+  \item Atribuição 5: 20 + 13 + 16 = 49
+  \item Atribuição 6: 20 + 21 + 19 = 60
+\end{itemize}
+\textbf{Menor soma:} $44$, escolhendo Ag1-T3, Ag2-T1, Ag3-T2.
+\end{frame}
+
+% Slide: Método Manual pela Tabela
+\begin{frame}{Método Manual pela Tabela}
+Para problemas pequenos, a solução pode ser obtida diretamente pela matriz de custos:
+
+\begin{itemize}
+  \item Para cada linha ou coluna, escolha o menor valor ainda disponível.
+  \item Atribua cada agente à tarefa correspondente, eliminando linha e coluna após cada escolha.
+  \item Repita até que todos estejam alocados.
+\end{itemize}
+
+Este método é simples para matrizes pequenas, mas pouco eficiente em casos maiores.
+\end{frame}
+
+% Slide 6: Métodos de Resolução
+\begin{frame}{Métodos de Resolução}
+  Os principais métodos para resolver problemas de atribuição são:
+  \begin{itemize}
+    \item \textbf{Algoritmo Húngaro}: Método clássico e eficiente.
+    \item Programação Linear: Pode ser resolvida pelo método simplex, mas o algoritmo húngaro é mais especializado.
+    \item Métodos heurísticos: Variações para casos maiores ou com restrições especiais.
+  \end{itemize}
+\end{frame}
+
+% Slide: Limitação do Simplex
+\begin{frame}{Por que não usar só o Simplex?}
+Apesar de o método simplex funcionar para problemas de atribuição, existem limitações importantes:
+
+\begin{itemize}
+  \item O número de variáveis e restrições cresce rapidamente, tornando inviável para problemas grandes.
+  \item O Algoritmo Húngaro aproveita propriedades especiais da matriz de atribuição, resolvendo o problema em tempo polinomial, enquanto o simplex pode ser exponencial em certos casos.
+  \item Na prática, o Húngaro é mais rápido, simples e especializado para atribuições.
+\end{itemize}
+
+\textbf{Conclusão:} Para problemas de atribuição, o Algoritmo Húngaro é claramente superior ao uso direto do simplex.
+\end{frame}
+
+% Slide: Modelo Simplex para Problema de Atribuição
+\begin{frame}{Modelo Simplex para Problema de Atribuição}
+Modelando com programação linear:
+
+\begin{align*}
+  & \min \sum_{i=1}^n \sum_{j=1}^n c_{ij}x_{ij} \\
+  \text{sujeito a:} \qquad & \sum_{j=1}^n x_{ij} = 1 && \forall i = 1,\dots,n \\
+                           & \sum_{i=1}^n x_{ij} = 1 && \forall j = 1,\dots,n \\
+                           & x_{ij} \in \{0,1\} && \forall i, j
+\end{align*}
+
+O método simplex pode resolver este sistema, mas exige muito tempo computacional caso o número de agentes/tarefas seja grande.
+\end{frame}
+
+% Slide: Formulação Simplex - Variáveis e Função Objetivo
+\begin{frame}{Resolução via Simplex --- Formulação}
+Para a matriz apresentada, introduza variáveis $x_{ij}$ binárias:
+
+\begin{align*}
+  \min \quad & 15x_{11} + 20x_{12} + 17x_{13} \\
+             & + 13x_{21} + 18x_{22} + 21x_{23} \\
+             & + 19x_{31} + 14x_{32} + 16x_{33}
+\end{align*}
+Com as restrições:
+\begin{align*}
+  x_{11} + x_{12} + x_{13} = 1 &\quad \text{(Agente 1)} \\
+  x_{21} + x_{22} + x_{23} = 1 &\quad \text{(Agente 2)} \\
+  x_{31} + x_{32} + x_{33} = 1 &\quad \text{(Agente 3)} \\
+  x_{11} + x_{21} + x_{31} = 1 &\quad \text{(Tarefa 1)} \\
+  x_{12} + x_{22} + x_{32} = 1 &\quad \text{(Tarefa 2)} \\
+  x_{13} + x_{23} + x_{33} = 1 &\quad \text{(Tarefa 3)} \\
+  x_{ij} \in \{0,1\}
+\end{align*}
+\end{frame}
+
+% Slide: Tableau Inicial e Interpretação
+\begin{frame}{Resolução via Simplex --- Tableau Inicial}
+Monte o tableau simplex para as variáveis:
+
+\begin{table}
+\centering
+\begin{tabular}{c|ccccccc|c}
+\textbf{Base} & $x_{11}$ & $x_{12}$ & $x_{13}$ & $x_{21}$ & $x_{22}$ & $x_{23}$ & $x_{31}$ & $b$ \\
+\hline
+Agente 1 & 1 & 1 & 1 & 0 & 0 & 0 & 0 & 1 \\
+Agente 2 & 0 & 0 & 0 & 1 & 1 & 1 & 0 & 1 \\
+Agente 3 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 1 \\
+Tarefa 1 & 1 & 0 & 0 & 1 & 0 & 0 & 1 & 1 \\
+Tarefa 2 & 0 & 1 & 0 & 0 & 1 & 0 & 0 & 1 \\
+Tarefa 3 & 0 & 0 & 1 & 0 & 0 & 1 & 0 & 1 \\
+\end{tabular}
+\caption{Tableau inicial das variáveis $x_{ij}$ e restrições.}
+\end{table}
+
+O método simplex tenta encontrar uma solução ótima testando possíveis bases válidas, usando pivoteamento; como todas restrições e custos são inteiros, espera-se solução inteira.
+
+\textbf{Observação}: Para problemas maiores o tableau cresce e pode ficar impraticável. Algoritmos especializados (Húngaro) resolvem com muito mais eficiência.
+\end{frame}
+
+% Slide 7: Algoritmo Húngaro
+\begin{frame}{Algoritmo Húngaro}
+  \textbf{Principais etapas:}
+  \begin{itemize}
+    \item Subtração do menor valor em cada linha e coluna.
+    \item Marcação das linhas/colunas para identificar coberturas mínimas.
+    \item Identificação das atribuições ótimas com custo zero.
+  \end{itemize}
+
+  \textbf{Propriedades:} Resolve o problema em tempo polinomial e garante a otimização.
+\end{frame}
+
+\begin{frame}{Algoritmo Húngaro: Passo 1}
+Considere a matriz de custos:
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|}
+\hline
+ & Tarefa 1 & Tarefa 2 & Tarefa 3 \\
+\hline
+Agente 1 & 15 & 20 & 17 \\
+Agente 2 & 13 & 18 & 21 \\
+Agente 3 & 19 & 14 & 16 \\
+\hline
+\end{tabular}
+\end{center}
+
+\textbf{1. Redução das linhas}
+
+Subtraia o menor valor de cada linha:
+\begin{itemize}
+\item Agente 1 (menor = 15): $0, 5, 2$
+\item Agente 2 (menor = 13): $0, 5, 8$
+\item Agente 3 (menor = 14): $5, 0, 2$
+\end{itemize}
+
+Matriz reduzida pelas linhas:
+\begin{center}
+\begin{tabular}{|c|c|c|c|}
+\hline
+ & T1 & T2 & T3 \\
+\hline
+Ag1 & 0 & 5 & 2 \\
+Ag2 & 0 & 5 & 8 \\
+Ag3 & 5 & 0 & 2 \\
+\hline
+\end{tabular}
+\end{center}
+\end{frame}
+
+\begin{frame}{Algoritmo Húngaro: Passo 2}
+\textbf{2. Redução das colunas}
+
+Subtraia o menor valor de cada coluna:
+\begin{itemize}
+\item Coluna 1 (menor = 0): não altera
+\item Coluna 2 (menor = 0): não altera
+\item Coluna 3 (menor = 2): subtraia 2
+\end{itemize}
+
+Matriz após redução das colunas:
+\begin{center}
+\begin{tabular}{|c|c|c|c|}
+\hline
+ & T1 & T2 & T3 \\
+\hline
+Ag1 & 0 & 5 & 0 \\
+Ag2 & 0 & 5 & 6 \\
+Ag3 & 5 & 0 & 0 \\
+\hline
+\end{tabular}
+\end{center}
+\end{frame}
+
+% PASSO 3 - PARTE 1
+\begin{frame}{Algoritmo Húngaro: Passo 3 (Parte 1)}
+\textbf{Regra:} Procure linhas/colunas com apenas um zero. Marque esse zero e elimine sua linha e coluna.
+
+\vspace{0.3cm}
+\textbf{Matriz inicial após reduções:}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|c|c|c|c|}
+\hline
+ & T1 & T2 & T3 \\
+\hline
+Ag1 & \alert{0} & 5 & \alert{0} \\
+Ag2 & \alert{0} & 5 & 6 \\
+Ag3 & 5 & \alert{0} & \alert{0} \\
+\hline
+\end{tabular}
+\end{center}
+
+\textbf{Passo 1:} Linha Ag2 tem apenas \alert{1 zero} (coluna T1) $\to$ Marque \alert{Ag2-T1}
+
+\textbf{Elimine linha Ag2 e coluna T1}
+\end{frame}
+
+% PASSO 3 - PARTE 2
+\begin{frame}{Algoritmo Húngaro: Passo 3 (Parte 2)}
+\textbf{Matriz após primeiro passo:}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|c|c|c|}
+\hline
+ & T2 & T3 \\
+\hline
+Ag1 & 5 & \alert{0} \\
+Ag3 & \alert{0} & \alert{0} \\
+\hline
+\end{tabular}
+\end{center}
+
+\textbf{Passo 2:} Coluna T2 tem apenas \alert{1 zero} (linha Ag3) $\to$ Marque \alert{Ag3-T2}
+
+\textbf{Elimine linha Ag3 e coluna T2:}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|c|c|}
+\hline
+ & T3 \\
+\hline
+Ag1 & \alert{0} \\
+\hline
+\end{tabular}
+\end{center}
+
+\textbf{Passo 3:} Só resta Ag1-T3 $\to$ Marque \alert{Ag1-T3}
+
+\vspace{0.3cm}
+\textbf{Atribuição completa:} \alert{Ag2-T1}, \alert{Ag3-T2}, \alert{Ag1-T3}
+
+\textbf{Custo total:} $13 + 14 + 17 = 44$
+\end{frame}
+
+% Slide 8: Exercício Prático
+\begin{frame}{Exercício}
+  Considere a seguinte matriz de custos:
+  \begin{center}
+    \begin{tabular}{|c|c|c|c|}
+      \hline
+       & Tarefa 1 & Tarefa 2 & Tarefa 3 \\
+      \hline
+      Agente 1 & 8 & 7 & 9 \\
+      Agente 2 & 6 & 5 & 8 \\
+      Agente 3 & 7 & 9 & 6 \\
+      \hline
+    \end{tabular}
+  \end{center}
+
+  \textbf{Pergunta}: Usando o Algoritmo Húngaro, encontre a atribuição de menor custo e justifique cada passo.
+\end{frame}
+
+\nocite{*}
+
+% Slide 10: Referências
+\begin{frame}[allowframebreaks]{Referências}
+  \bibliographystyle{plain}
+  \bibliography{referencias}
+\end{frame}
+
+\end{document}
