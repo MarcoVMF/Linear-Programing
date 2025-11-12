@@ -1,1 +1,10 @@
 $ENV{'TZ'}='America/Sao_Paulo';
+
+# Use biber with biblatex so bibliography updates apply
+$bibtex_use = 2;
+
+# Be explicit about pdflatex invocation (quiet + synctex)
+$pdflatex = 'pdflatex -interaction=nonstopmode -synctex=1 %O %S';
+
+# Optional: clean common aux files on latexmk -c
+$clean_ext = 'acn acr alg aux bbl bcf blg glg glo gls ist lof log lol lot out run.xml toc synctex.gz fdb_latexmk fls nav snm vrb';

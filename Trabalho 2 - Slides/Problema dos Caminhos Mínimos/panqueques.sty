@@ -33,5 +33,10 @@
 
 \usepackage[utf8]{inputenc}
 \usepackage[brazil]{babel}
-\usepackage[style=abnt]{biblatex}
-\addbibresource{ref.bib}  
+\usepackage{csquotes}
+\usepackage[backend=biber,style=abnt]{biblatex}
+% Map biblatex strings to ABNT localization files bundled in abnt/ folder
+\DeclareLanguageMapping{brazil}{brazil-abnt}
+\DeclareLanguageMapping{portuguese}{portuguese-abnt}
+\addbibresource{ref.bib}
+  
