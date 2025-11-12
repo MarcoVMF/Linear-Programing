@@ -32,7 +32,7 @@
 
 % SLIDE 3: APLICAÇÕES PRÁTICAS
 \begin{frame}
-\frametitle{Onde o PCM se Esconde?}
+\frametitle{Onde encontrar o PCM}
 \begin{itemize}
     \item \textbf{Redes de Computadores:} Roteamento de pacotes na internet (Protocolo OSPF) — o custo é a latência.
     \item \textbf{Logística e Transporte:} Otimização de rotas de entrega (Correios, Mercado Livre) — o custo é a distância ou tempo.
@@ -69,7 +69,6 @@
 \end{columns}
 \end{frame}
 
-% SLIDE 5: DEFINIÇÃO FORMAL - PARTE 2
 \begin{frame}
 \frametitle{O Problema de Caminhos Mínimos}
 \begin{itemize}
@@ -82,15 +81,26 @@
         \item Ex: $Custo(P) = w_{AB} + w_{BD}$
     \end{itemize}
 \end{itemize}
- \begin{block}{O Grande Objetivo}
+
+\vspace{0.3cm}
+\begin{exampleblock}{Intuição}
+    Queremos encontrar o caminho mais “barato” ou “curto” entre dois pontos em um grafo.
+\end{exampleblock}
+\end{frame}
+
+\begin{frame}
+\frametitle{Formulação Matemática do Problema}
+\begin{block}{O Grande Objetivo}
     Dado um grafo ponderado $G$, um nó origem $s$ e um nó destino $t$, encontrar o caminho $P$ de $s$ para $t$ que \textbf{minimiza o custo total}.
     \[
       P^* = \arg\min_{P:\, s\to t} \sum_{(i,j)\in P} w_{ij}
     \]
- \end{block}
- \begin{alertblock}{Observação Importante}
+\end{block}
+
+\vspace{0.3cm}
+\begin{alertblock}{Observação Importante}
     Os algoritmos que vamos estudar (Dijkstra, Bellman-Ford) resolvem o problema de \textbf{Origem Única (SSSP)}: encontram o caminho mínimo de $s$ para \textbf{TODOS} os outros nós.
- \end{alertblock}
+\end{alertblock}
 \end{frame}
 
 % --- MÓDULO 2: MODELO MATEMÁTICO ---
@@ -103,20 +113,43 @@
 \begin{itemize}
     \item \textbf{Ideia:} Modelar como um \textbf{Problema de Fluxo} para enviar 1 unidade da origem $s$ ao destino $t$.
 \end{itemize}
+
+\pause
 \begin{block}{Variáveis de Decisão}
-$x_{ij} = 1$ se o arco $(i, j)$ for usado no caminho, $0$ caso contrário.
+$x_{ij} = 
+\begin{cases} 
+1, & \text{se o arco } (i, j) \text{ for usado no caminho;} \\[4pt]
+0, & \text{caso contrário.}
+\end{cases}$
 \end{block}
+
+\pause
 \begin{block}{Função Objetivo (Minimizar o Custo Total)}
 Minimizar a soma dos custos de todas as arestas usadas:
 \[
 \min Z = \sum_{(i,j) \in E} w_{ij} \cdot x_{ij}
 \]
 \end{block}
-\begin{block}{Restrições (Conservação de Fluxo)}
+\end{frame}
+
+\begin{frame}
+\frametitle{Modelo PL: Restrições de Conservação de Fluxo}
+\begin{block}{Restrições}
 \begin{itemize}
-    \item \textbf{Origem (s):} Fluxo que Sai = 1
-    \item \textbf{Intermediário (k):} Fluxo que Entra = Fluxo que Sai
-    \item \textbf{Destino (t):} Fluxo que Entra = 1
+    \item \textbf{Origem ($s$):} Fluxo que \textbf{sai} = 1
+    \[
+    \sum_{j:(s,j)\in E} x_{sj} = 1
+    \]
+    \pause
+    \item \textbf{Nós intermediários ($k$):} Fluxo que \textbf{entra} = Fluxo que \textbf{sai}
+    \[
+    \sum_{i:(i,k)\in E} x_{ik} - \sum_{j:(k,j)\in E} x_{kj} = 0
+    \]
+    \pause
+    \item \textbf{Destino ($t$):} Fluxo que \textbf{entra} = 1
+    \[
+    \sum_{i:(i,t)\in E} x_{it} = 1
+    \]
 \end{itemize}
 \end{block}
 \end{frame}
@@ -128,7 +161,7 @@ Minimizar a soma dos custos de todas as arestas usadas:
     \item Vamos modelar o problema de achar a rota de custo mínimo da Origem \textbf{A} para o Destino \textbf{E}.
 \end{itemize}
 \begin{columns}[T,onlytextwidth]
-    \begin{column}{0.5\textwidth}
+    \begin{column}{0.7\textwidth}
         \centering
         \begin{tikzpicture}[scale=0.85, every node/.style={circle, draw, minimum size=0.7cm}]
             \node (A) at (0, 2) {A};
@@ -166,38 +199,50 @@ Minimizar a soma dos custos de todas as arestas usadas:
 \frametitle{Exemplo de Modelagem: O PPL Completo}
 
 \textbf{Função Objetivo (Minimizar Z):}
-% Use 'tiny' para garantir que a F.O. caiba na linha
 \begin{tiny}
 \[
 \min Z = 4x_{AB} + 2x_{AC} + 1x_{BC} + 5x_{BD} + 8x_{CD} + 10x_{CE} + 3x_{DE}
 \]
 \end{tiny}
+
 \textbf{Sujeito a (Conservação de Fluxo):}
-% Use 'scriptsize' para diminuir as equações
-\begin{scriptsize} 
+\begin{scriptsize}
 \begin{align*}
-(x_{AB} + x_{AC}) - 0 &= 1 && \text{(Nó A: Origem)} \\
-(x_{BC} + x_{BD}) - x_{AB} &= 0 && \text{(Nó B: Intermediário)} \\
-(x_{CD} + x_{CE}) - (x_{AC} + x_{BC}) &= 0 && \text{(Nó C: Intermediário)} \\
-(x_{DE}) - (x_{BD} + x_{CD}) &= 0 && \text{(Nó D: Intermediário)} \\
-0 - (x_{CE} + x_{DE}) &= -1 && \text{(Nó E: Destino)} \\
-x_{ij} &\ge 0
+x_{AB} + x_{AC} &= 1 && \text{(Nó A: Origem)} \\
+x_{BC} + x_{BD} - x_{AB} &= 0 && \text{(Nó B: Intermediário)} \\
+x_{CD} + x_{CE} - x_{AC} - x_{BC} &= 0 && \text{(Nó C: Intermediário)} \\
+x_{DE} - x_{BD} - x_{CD} &= 0 && \text{(Nó D: Intermediário)} \\
+x_{CE} + x_{DE} &= 1 && \text{(Nó E: Destino)} \\
+x_{ij} &\in \{0,1\}, \quad \forall (i,j)
 \end{align*}
 \end{scriptsize}
+
+\textbf{Interpretação:} 
+\begin{scriptsize}
+Cada variável $x_{ij}$ indica se o arco $(i,j)$ faz parte do caminho mínimo (1) ou não (0).  
+O modelo garante que o fluxo parte de A, passa por nós intermediários e chega em E com o menor custo total.
+\end{scriptsize}
+
 \end{frame}
 
-% SLIDE 9: A MÁGICA DA PROGRAMAÇÃO LINEAR
 \begin{frame}
 \frametitle{Modelo PL: A Mágica da Integridade}
+
 \begin{itemize}
-    \item \textbf{Pergunta:} Nós não deveríamos forçar $x_{ij}$ a ser um número inteiro ($0$ ou $1$)?
+    \item \textbf{Questão:} É necessário impor explicitamente que as variáveis $x_{ij}$ assumam apenas valores inteiros ($0$ ou $1$)?
     \[
     x_{ij} \in \{0, 1\} \quad \text{(Programação Inteira)}
     \]
-    \item \textbf{Resposta:} Não precisa!
-    \item Este tipo de problema de rede (Fluxo de Custo Mínimo) tem uma propriedade especial chamada \textbf{Total Unimodularidade}.
-    \item \textbf{O que importa:} Essa propriedade \textbf{garante} que, se a oferta (1) e a demanda (1) são inteiras, a solução ótima do problema de Programação Linear (com $x_{ij} \ge 0$) \textbf{já será inteira}.
+
+    \item \textbf{Observação:} Para este tipo de problema de rede, a imposição de integralidade não é necessária.
+
+    \item Modelos de \textbf{Fluxo de Custo Mínimo} — como o problema de caminho mínimo — possuem uma estrutura matricial denominada \textbf{Totalmente Unimodular}. 
+
+    \item \textbf{Consequência:} Quando a matriz de coeficientes do sistema de restrições é totalmente unimodular e os termos do lado direito (ofertas e demandas) são inteiros, o \textbf{problema de Programação Linear relaxado} (isto é, considerando apenas $x_{ij} \ge 0$) apresenta uma \textbf{solução ótima inteira}.
+
+    \item \textbf{Em síntese:} A propriedade de total unimodularidade garante a integridade natural da solução, tornando desnecessária a formulação explícita como um problema de programação inteira.
 \end{itemize}
+
 \end{frame}
 
 % --- MÓDULO 3: MÉTODOS DE RESOLUÇÃO ---
@@ -233,9 +278,10 @@ O Algoritmo de Dijkstra \textbf{NÃO FUNCIONA} se o grafo tiver arestas com \tex
 % --- SLIDES 12-17: Exercício de Dijkstra ---
 \begin{frame}
 \frametitle{Exercício: Algoritmo de Dijkstra (Inicialização)}
-% Usar \begin{columns} garante que o grafo e o texto fiquem lado a lado
+
 \begin{columns}[T,onlytextwidth]
-    \begin{column}{0.5\textwidth}
+    % --- Coluna do grafo ---
+    \begin{column}{0.7\textwidth}
         \centering
         \begin{tikzpicture}[scale=0.9, every node/.style={circle, draw, minimum size=0.7cm}]
             \node[fill=gray!30] (A) at (0, 2) {A}; % Nó inicial
@@ -253,32 +299,40 @@ O Algoritmo de Dijkstra \textbf{NÃO FUNCIONA} se o grafo tiver arestas com \tex
             \draw[->] (D) -- node[above, font=\small]{3} (E);
         \end{tikzpicture}
     \end{column}
-    \begin{column}{0.5\textwidth}
-        	extbf{Nós Visitados: \{\}}
-        {\footnotesize\setlength{\tabcolsep}{6pt}\renewcommand{\arraystretch}{1.1}%
+    
+    % --- Coluna da tabela ---
+    \begin{column}{0.3\textwidth}
+        \textbf{Nós Visitados: \{\}} \\[4pt]
+        {\footnotesize
+        \setlength{\tabcolsep}{6pt}
+        \renewcommand{\arraystretch}{1.1}
         \begin{tabular}{c|c|c}
-        	extbf{Nó} & \textbf{dist[i]} & \textbf{prev[i]} \\ \hline
-        A & \textbf{0} & - \\
-        B & $\infty$ & - \\
-        C & $\infty$ & - \\
-        D & $\infty$ & - \\
-        E & $\infty$ & - \\
+            \textbf{Nó} & \textbf{dist[i]} & \textbf{prev[i]} \\ \hline
+            A & \textbf{0} & - \\
+            B & $\infty$ & - \\
+            C & $\infty$ & - \\
+            D & $\infty$ & - \\
+            E & $\infty$ & - \\
         \end{tabular}}
-        \medskip
+        \vspace{6pt}
+        
         \textbf{Próximo nó:} A (custo 0)
     \end{column}
 \end{columns}
+
 \end{frame}
 
 \begin{frame}
 \frametitle{Exercício: Dijkstra - Iteração 1 (Nó A)}
+
 \begin{columns}[T,onlytextwidth]
-    \begin{column}{0.5\textwidth}
+    % --- Coluna do grafo ---
+    \begin{column}{0.58\textwidth}
         \centering
         \begin{tikzpicture}[scale=0.85, every node/.style={circle, draw, minimum size=0.7cm}]
             \node[fill=gray!30] (A) at (0, 2) {A}; 
             \node[fill=blue!30] (B) at (3, 4) {B}; % Alcançado
-            \node[fill=red!30] (C) at (3, 0) {C}; % Alcançado e menor
+            \node[fill=red!30] (C) at (3, 0) {C};  % Alcançado e menor
             \node (D) at (6, 2) {D};
             \node (E) at (9, 2) {E};
             
@@ -291,32 +345,45 @@ O Algoritmo de Dijkstra \textbf{NÃO FUNCIONA} se o grafo tiver arestas com \tex
             \draw[->] (D) -- node[above, font=\small]{3} (E);
         \end{tikzpicture}
     \end{column}
-    \begin{column}{0.5\textwidth}
-        \textbf{Visitando Nó: A} (dist=0)
+
+    % --- Coluna da explicação e tabela ---
+    \begin{column}{0.42\textwidth}
+        \textbf{Visitando Nó: A} (dist = 0)
+        \vspace{4pt}
+
         \begin{itemize}
-            \item Vizinho B: $0 + 4 = 4$. (Atualiza dist[B]=4, prev[B]=A)
-            \item Vizinho C: $0 + 2 = 2$. (Atualiza dist[C]=2, prev[C]=A)
+            \item Vizinho B: $0 + 4 = 4$ → Atualiza dist[B]=4, prev[B]=A
+            \item Vizinho C: $0 + 2 = 2$ → Atualiza dist[C]=2, prev[C]=A
         \end{itemize}
-        	extbf{Nós Visitados: \{A\}}
-    {\footnotesize\setlength{\tabcolsep}{6pt}\renewcommand{\arraystretch}{1.1}%
-    \begin{tabular}{c|c|c}
-        	extbf{Nó} & \textbf{dist[i]} & \textbf{prev[i]} \\ \hline
-    A & 0 & - \\
-    B & \textbf{4} & A \\
-    C & \textbf{2} & A \\
-    D & $\infty$ & - \\
-    E & $\infty$ & - \\
-    \end{tabular}}
-    \medskip
-        \textbf{Próximo nó:} C (menor dist=2)
+
+        \vspace{4pt}
+        \textbf{Nós Visitados: \{A\}} \\[4pt]
+
+        {\footnotesize
+        \setlength{\tabcolsep}{6pt}
+        \renewcommand{\arraystretch}{1.1}
+        \begin{tabular}{c|c|c}
+            \textbf{Nó} & \textbf{dist[i]} & \textbf{prev[i]} \\ \hline
+            A & 0 & - \\
+            B & \textbf{4} & A \\
+            C & \textbf{2} & A \\
+            D & $\infty$ & - \\
+            E & $\infty$ & - \\
+        \end{tabular}}
+
+        \vspace{6pt}
+        \textbf{Próximo nó:} C (menor dist = 2)
     \end{column}
 \end{columns}
+
 \end{frame}
 
 \begin{frame}
 \frametitle{Exercício: Dijkstra - Iteração 2 (Nó C)}
+
 \begin{columns}[T,onlytextwidth]
-    \begin{column}{0.5\textwidth}
+    % --- Coluna do grafo ---
+    \begin{column}{0.58\textwidth}
         \centering
         \begin{tikzpicture}[scale=0.85, every node/.style={circle, draw, minimum size=0.7cm}]
             \node[fill=gray!30] (A) at (0, 2) {A}; 
@@ -334,32 +401,45 @@ O Algoritmo de Dijkstra \textbf{NÃO FUNCIONA} se o grafo tiver arestas com \tex
             \draw[->] (D) -- node[above, font=\small]{3} (E);
         \end{tikzpicture}
     \end{column}
-    \begin{column}{0.5\textwidth}
-        \textbf{Visitando Nó: C} (dist=2)
+
+    % --- Coluna da explicação e tabela ---
+    \begin{column}{0.42\textwidth}
+        \textbf{Visitando Nó: C} (dist = 2)
+        \vspace{4pt}
+
         \begin{itemize}
-            \item Vizinho D: $2 + 8 = 10$. (Atualiza dist[D]=10, prev[D]=C)
-            \item Vizinho E: $2 + 10 = 12$. (Atualiza dist[E]=12, prev[E]=C)
+            \item Vizinho D: $2 + 8 = 10$ → Atualiza dist[D]=10, prev[D]=C
+            \item Vizinho E: $2 + 10 = 12$ → Atualiza dist[E]=12, prev[E]=C
         \end{itemize}
-        	extbf{Nós Visitados: \{A, C\}}
-    {\footnotesize\setlength{\tabcolsep}{6pt}\renewcommand{\arraystretch}{1.1}%
-    \begin{tabular}{c|c|c}
-        	extbf{Nó} & \textbf{dist[i]} & \textbf{prev[i]} \\ \hline
-    A & 0 & - \\
-    B & 4 & A \\
-    C & 2 & A \\
-    D & \textbf{10} & C \\
-    E & \textbf{12} & C \\
-    \end{tabular}}
-    \medskip
-        \textbf{Próximo nó:} B (menor dist=4)
+
+        \vspace{4pt}
+        \textbf{Nós Visitados: \{A, C\}} \\[4pt]
+
+        {\footnotesize
+        \setlength{\tabcolsep}{6pt}
+        \renewcommand{\arraystretch}{1.1}
+        \begin{tabular}{c|c|c}
+            \textbf{Nó} & \textbf{dist[i]} & \textbf{prev[i]} \\ \hline
+            A & 0 & - \\
+            B & 4 & A \\
+            C & 2 & A \\
+            D & \textbf{10} & C \\
+            E & \textbf{12} & C \\
+        \end{tabular}}
+
+        \vspace{6pt}
+        \textbf{Próximo nó:} B (menor dist = 4)
     \end{column}
 \end{columns}
+
 \end{frame}
 
 \begin{frame}
 \frametitle{Exercício: Dijkstra - Iteração 3 (Nó B) - A "Relaxação"}
+
 \begin{columns}[T,onlytextwidth]
-    \begin{column}{0.5\textwidth}
+    % --- Coluna do grafo ---
+    \begin{column}{0.58\textwidth}
         \centering
         \begin{tikzpicture}[scale=0.85, every node/.style={circle, draw, minimum size=0.7cm}]
             \node[fill=gray!30] (A) at (0, 2) {A}; 
@@ -377,34 +457,47 @@ O Algoritmo de Dijkstra \textbf{NÃO FUNCIONA} se o grafo tiver arestas com \tex
             \draw[->] (D) -- node[above, font=\small]{3} (E);
         \end{tikzpicture}
     \end{column}
-    \begin{column}{0.5\textwidth}
-        \textbf{Visitando Nó: B} (dist=4)
+
+    % --- Coluna da explicação e tabela ---
+    \begin{column}{0.42\textwidth}
+        \textbf{Visitando Nó: B} (dist = 4)
+        \vspace{4pt}
+
         \begin{itemize}
-            \item Vizinho C: Já visitado.
+            \item Vizinho C: já visitado.
             \item Vizinho D: $4 + 5 = 9$.
-            \item O custo atual de D é 10. \textbf{Como 9 < 10, atualizamos!}
-            \item (Atualiza dist[D]=9, prev[D]=B)
+            \item O custo atual de D é 10. \\[2pt]
+                  \textbf{Como 9 < 10, atualizamos!}
+            \item Atualiza dist[D] = 9, prev[D] = B
         \end{itemize}
-        	extbf{Nós Visitados: \{A, C, B\}}
-    {\footnotesize\setlength{\tabcolsep}{6pt}\renewcommand{\arraystretch}{1.1}%
-    \begin{tabular}{c|c|c}
-        	extbf{Nó} & \textbf{dist[i]} & \textbf{prev[i]} \\ \hline
-    A & 0 & - \\
-    B & 4 & A \\
-    C & 2 & A \\
-    D & \textbf{9} & \textbf{B} \\
-    E & 12 & C \\
-    \end{tabular}}
-    \medskip
-        \textbf{Próximo nó:} D (menor dist=9)
+
+        \vspace{4pt}
+        \textbf{Nós Visitados: \{A, C, B\}} \\[4pt]
+
+        {\footnotesize
+        \setlength{\tabcolsep}{6pt}
+        \renewcommand{\arraystretch}{1.1}
+        \begin{tabular}{c|c|c}
+            \textbf{Nó} & \textbf{dist[i]} & \textbf{prev[i]} \\ \hline
+            A & 0 & - \\
+            B & 4 & A \\
+            C & 2 & A \\
+            D & \textbf{9} & \textbf{B} \\
+            E & 12 & C \\
+        \end{tabular}}
+
+        \vspace{6pt}
+        \textbf{Próximo nó:} D (menor dist = 9)
     \end{column}
 \end{columns}
+
 \end{frame}
+
 
 \begin{frame}
 \frametitle{Exercício: Dijkstra - Iterações 4 e 5 (Nós D, E)}
 \begin{columns}[T,onlytextwidth]
-    \begin{column}{0.5\textwidth}
+    \begin{column}{0.58\textwidth}
         \centering
         \begin{tikzpicture}[scale=0.85, every node/.style={circle, draw, minimum size=0.7cm}]
             \node[fill=gray!30] (A) at (0, 2) {A}; 
@@ -422,7 +515,7 @@ O Algoritmo de Dijkstra \textbf{NÃO FUNCIONA} se o grafo tiver arestas com \tex
             \draw[->,line width=2pt] (D) -- node[above, font=\small]{3} (E); % Caminho usado
         \end{tikzpicture}
     \end{column}
-    \begin{column}{0.5\textwidth}
+    \begin{column}{0.42\textwidth}
         \textbf{Visitando Nó: D} (dist=9)
         \begin{itemize}
             \item Vizinho E: $9 + 3 = 12$.
@@ -433,10 +526,10 @@ O Algoritmo de Dijkstra \textbf{NÃO FUNCIONA} se o grafo tiver arestas com \tex
             \item Fim do algoritmo (destino alcançado / fila vazia).
         \end{itemize}
         
-                extbf{Nós Visitados: \{A, C, B, D, E\}}
+        \textbf{Nós Visitados: \{A, C, B, D, E\}}
         {\footnotesize\setlength{\tabcolsep}{6pt}\renewcommand{\arraystretch}{1.1}%
         \begin{tabular}{c|c|c}
-    						extbf{Nó} & \textbf{dist[i]} & \textbf{prev[i]} \\ \hline
+        \textbf{Nó} & \textbf{dist[i]} & \textbf{prev[i]} \\ \hline
         A & 0 & - \\
         B & 4 & A \\
         C & 2 & A \\
@@ -448,87 +541,160 @@ O Algoritmo de Dijkstra \textbf{NÃO FUNCIONA} se o grafo tiver arestas com \tex
 \end{frame}
 
 \begin{frame}
-\frametitle{Exercício: Dijkstra - Conclusão e Caminho}
-\begin{block}{Resultado Final (Tabela)}
-A tabela `dist` nos dá o custo mínimo de A para *todos* os outros nós:
-\begin{itemize}
-    \item Custo para B: 4
-    \item Custo para C: 2
-    \item Custo para D: 9
-    \item Custo para E: 12
-\end{itemize}
-\end{block}
+\frametitle{Exercício: Dijkstra — Conclusão e Caminho}
 
-\begin{alertblock}{Encontrando o Caminho (Backtracking)}
-Mas qual é o caminho de custo 12? Usamos a tabela `prev` de trás para frente:
-\begin{enumerate}
-    \item Começamos em \textbf{E}.
-    \item Quem é o anterior (prev) de E? É o nó \textbf{C}. (Caminho: ... $\to C \to E$)
-    \item Quem é o anterior (prev) de C? É o nó \textbf{A}. (Caminho: ... $\to A \to C \to E$)
-    \item Chegamos na Origem (A). Fim.
-\end{enumerate}
-\textbf{Caminho Mínimo: $A \to C \to E$ \quad Custo Total: $2 + 10 = 12$}
-\end{alertblock}
+\begin{columns}[T,onlytextwidth]
+    \begin{column}{0.45\textwidth}
+        \begin{block}{Custos Mínimos a partir de A}
+        \centering
+        {\footnotesize
+        \renewcommand{\arraystretch}{1.2}
+        \begin{tabular}{c|c}
+        \textbf{Nó} & \textbf{Custo (dist)} \\ \hline
+        B & 4 \\
+        C & 2 \\
+        D & 9 \\
+        E & 12 \\
+        \end{tabular}
+        }
+        \end{block}
+    \end{column}
+
+    \begin{column}{0.55\textwidth}
+        \begin{alertblock}{Caminho Mínimo (Backtracking)}
+        \begin{itemize}
+            \item \textbf{E} $\leftarrow$ C  
+            \item \textbf{C} $\leftarrow$ A  
+            \item Chegamos à origem: \textbf{A}
+        \end{itemize}
+        \vspace{0.2cm}
+        \centering
+        \textbf{Caminho:} $A \rightarrow C \rightarrow E$ \\[4pt]
+        \textbf{Custo Total:} $2 + 10 = 12$
+        \end{alertblock}
+    \end{column}
+\end{columns}
 \end{frame}
 
-% SLIDES 18-20: BELLMAN-FORD E COMPARATIVO
+\begin{frame}
+\frametitle{Exercício: Algoritmo de Dijkstra (Inicialização)}
+
+\begin{columns}[T,onlytextwidth]
+    % --- Coluna do grafo ---
+    \begin{column}{0.7\textwidth}
+        \centering
+        \begin{tikzpicture}[scale=0.9, every node/.style={circle, draw, minimum size=0.7cm}]
+            % Nós
+            \node[fill=gray!30] (A) at (0, 2) {A}; % Nó inicial
+            \node (B) at (3, 4) {B};
+            \node (C) at (3, 0) {C};
+            \node (D) at (6, 4) {D};
+            \node (E) at (6, 0) {E};
+            \node (F) at (9, 2) {F};
+            
+            % Arestas
+            \draw[->] (A) -- node[above, font=\small]{3} (B);
+            \draw[->] (A) -- node[below, font=\small]{6} (C);
+            \draw[->] (B) -- node[above, font=\small]{2} (D);
+            \draw[->] (B) -- node[left, font=\small]{4} (C);
+            \draw[->] (C) -- node[below, font=\small]{2} (E);
+            \draw[->] (D) -- node[above, font=\small]{3} (F);
+            \draw[->] (E) -- node[below, font=\small]{1} (F);
+            \draw[->] (C) -- node[left, font=\small]{5} (D);
+        \end{tikzpicture}
+    \end{column}
+    
+    % --- Coluna da tabela ---
+    \begin{column}{0.3\textwidth}
+        \textbf{Nós Visitados: \{\}} \\[4pt]
+        {\footnotesize
+        \setlength{\tabcolsep}{6pt}
+        \renewcommand{\arraystretch}{1.1}
+        \begin{tabular}{c|c|c}
+            \textbf{Nó} & \textbf{dist[i]} & \textbf{prev[i]} \\ \hline
+            A & \textbf{0} & - \\
+            B & $\infty$ & - \\
+            C & $\infty$ & - \\
+            D & $\infty$ & - \\
+            E & $\infty$ & - \\
+            F & $\infty$ & - \\
+        \end{tabular}}
+        \vspace{6pt}
+        
+        \textbf{Próximo nó:} A (custo 0)
+    \end{column}
+\end{columns}
+\end{frame}
+
 \begin{frame}
 \frametitle{Algoritmo de Bellman-Ford}
-\begin{block}{O Conceito}
-Uma abordagem de \textbf{Programação Dinâmica}. Em vez de ser "guloso", ele é "pessimista" e re-calcula tudo várias vezes.
+
+\begin{block}{Ideia Geral}
+O algoritmo de \textbf{Bellman-Ford} segue uma abordagem de \textbf{Programação Dinâmica}.
+Diferente do Dijkstra, que é \textbf{guloso}, o Bellman-Ford é \textbf{cauteloso}: 
+ele reavalia continuamente todas as arestas, garantindo o custo mínimo mesmo com pesos negativos.
 \end{block}
 
 \begin{alertblock}{Principais Vantagens}
 \begin{itemize}
     \item \textbf{Funciona com pesos negativos.}
-    \item Consegue \textbf{detectar ciclos negativos} (um loop no grafo que, se percorrido, reduz o custo infinitamente).
+    \item \textbf{Detecta ciclos negativos}, isto é, caminhos que reduzem o custo infinitamente.
 \end{itemize}
 \end{alertblock}
 
-\begin{itemize}
-    \item \textbf{Ideia Principal (Parte 1):}
-    \begin{itemize}
-        \item Repete o processo de "relaxar" \textbf{TODAS} as arestas do grafo, um total de $|V|-1$ vezes (onde $|V|$ é o número de nós).
-    \end{itemize}
-\end{itemize}
-\end{frame}
-
-\begin{frame}
-\frametitle{Algoritmo de Bellman-Ford}
-\begin{itemize}
-    \item \textbf{Ideia Principal (Parte 2):}
-    \begin{itemize}
-        \item \textbf{Por que $|V|-1$ vezes?} Porque o maior caminho mínimo possível *sem* um ciclo só pode ter, no máximo, $|V|-1$ arestas.
-        \item Após as $|V|-1$ repetições, o algoritmo faz uma \textbf{última checagem} (uma $|V|$-ésima passagem).
-        \item Se ainda for possível "relaxar" alguma aresta nessa última passagem, o algoritmo para e avisa: \textbf{"Ciclo Negativo Detectado!"}
-    \end{itemize}
-\end{itemize}
-
-\begin{block}{Aplicação de Ciclo Negativo}
-Isso é usado em finanças para detectar \textbf{arbitragem}: trocar Moeda A $\to$ Moeda B $\to$ Moeda C $\to$ Moeda A e sair com mais dinheiro do que começou.
+\begin{block}{Ideia Principal}
+Repete o processo de \textbf{relaxar todas as arestas} do grafo exatamente $|V|-1$ vezes,
+onde $|V|$ é o número de vértices.
 \end{block}
 \end{frame}
+
+
+\begin{frame}
+\frametitle{Algoritmo de Bellman-Ford — Funcionamento}
+
+\begin{block}{Por que repetir $|V|-1$ vezes?}
+O maior caminho possível sem formar um ciclo contém, no máximo, $|V|-1$ arestas.
+Após essas iterações, todos os menores caminhos já terão sido encontrados.
+\end{block}
+
+\begin{alertblock}{Detecção de Ciclos Negativos}
+Após as $|V|-1$ passagens, o algoritmo faz uma \textbf{última verificação}:
+\begin{itemize}
+    \item Se ainda for possível “relaxar” alguma aresta, 
+    significa que existe um \textbf{ciclo negativo}.
+    \item Nesse caso, o algoritmo emite um alerta: \textbf{"Ciclo Negativo Detectado!"}
+\end{itemize}
+\end{alertblock}
+
+\begin{exampleblock}{Aplicação Prática}
+Em finanças, é usado para detectar \textbf{arbitragem}:
+\textit{converter moedas em sequência (A → B → C → A) e terminar com lucro}.
+\end{exampleblock}
+\end{frame}
+
 
 \begin{frame}
 \frametitle{Comparativo: Dijkstra vs. Bellman-Ford}
 
-\begin{table}[]
+\begin{table}[h!]
 \centering
-\begin{tabular}{|l|l|l|}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{|l|c|c|}
 \hline
-\textbf{Característica} & \textbf{Algoritmo de Dijkstra} & \textbf{Algoritmo de Bellman-Ford} \\ \hline
-\textbf{Abordagem} & Gulosa (Greedy) & Programação Dinâmica \\
-\textbf{Pesos Negativos?} & \textbf{Não} (falha) & \textbf{Sim} \\
-\textbf{Ciclos Negativos?} & Não (não detecta) & \textbf{Sim} (detecta) \\
-\textbf{Complexidade} & $O(E \log V)$ ou $O(V^2)$ & $O(V \cdot E)$ \\
-\textbf{Quando usar?} & Grafos sem pesos negativos & Grafos com pesos negativos \\
- & (Ex: GPS, redes OSPF) & (Ex: Detecção de arbitragem) \\ \hline
+\textbf{Característica} & \textbf{Dijkstra} & \textbf{Bellman-Ford} \\ \hline
+\textbf{Abordagem} & Gulosa (Greedy) & Programação Dinâmica \\ \hline
+\textbf{Pesos Negativos} & x Não funciona & V Suportado \\ \hline
+\textbf{Detecta Ciclos Negativos} & x Não & V Sim \\ \hline
+\textbf{Complexidade} & $O(E \log V)$ ou $O(V^2)$ & $O(V \cdot E)$ \\ \hline
+\textbf{Uso Típico} & Grafos sem pesos negativos & Grafos com pesos negativos \\ \hline
+\textbf{Exemplo} & GPS, OSPF (redes) & Arbitragem financeira \\ \hline
 \end{tabular}
 \end{table}
 
-\vspace{0.5cm} % Diminuí o vspace para caber
+\vspace{0.4cm}
 \begin{block}{Conclusão}
-A escolha do algoritmo depende da natureza do problema. Dijkstra é mais rápido, mas Bellman-Ford é mais robusto e "seguro" para grafos que podem ter custos negativos.
+\textbf{Dijkstra} é mais rápido e eficiente para grafos positivos.  
+\textbf{Bellman-Ford}, embora mais lento, é mais \textbf{robusto e confiável} em cenários complexos.
 \end{block}
 \end{frame}
 
