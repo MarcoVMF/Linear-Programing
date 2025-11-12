@@ -179,6 +179,96 @@ Demanda & 10 & 10 & 40 &  \\ \hline
 \end{frame}
 
 \begin{frame}
+\frametitle{Vogel — Iteração 1}
+\begin{itemize}
+  \item Penalidades (diferença entre dois menores custos):
+    \begin{itemize}
+      \item Linhas: $r_1=2,\; r_2=4,\; r_3=1$
+      \item Colunas: $c_1=2,\; c_2=3,\; c_3=1$
+    \end{itemize}
+  \item Maior penalidade: \textbf{linha O2} ($r_2=4$). Menor custo nessa linha: $c_{2,1}=7$.
+  \item Alocação: $x_{2,1}=\min(15,10)=10$.
+\end{itemize}
+
+\bigskip
+\centering
+\begin{tabular}{c|ccc|c}
+ & D1 & D2 & D3 & Oferta \\ \hline
+O1 & 6 & 8 & 10 & 20 \\
+O2 & \textbf{7 (10)} & 11 & 11 & 5 \\
+O3 & 4 & 5 & 12 & 25 \\ \hline
+Demanda & 0 & 10 & 40 & 
+\end{tabular}
+\end{frame}
+
+\begin{frame}
+\frametitle{Vogel — Iteração 2}
+\begin{itemize}
+  \item Penalidades (após atualização):
+    \begin{itemize}
+      \item Linhas: $r_1=2,\; r_2=0,\; r_3=7$
+      \item Colunas: $c_2=3,\; c_3=1$
+    \end{itemize}
+  \item Maior penalidade: \textbf{linha O3} ($r_3=7$). Menor custo nessa linha: $c_{3,2}=5$.
+  \item Alocação: $x_{3,2}=\min(25,10)=10$.
+\end{itemize}
+
+\bigskip
+\centering
+\begin{tabular}{c|ccc|c}
+ & D1 & D2 & D3 & Oferta \\ \hline
+O1 & 6 & 8 & 10 & 20 \\
+O2 & 7 (10) & 11 & 11 & 5 \\
+O3 & 4 & \textbf{5 (10)} & 12 & 15 \\ \hline
+Demanda & 0 & 0 & 40 & 
+\end{tabular}
+\end{frame}
+
+\begin{frame}
+\frametitle{Vogel — Iterações 3,4 e 5 (coluna D3)}
+\begin{itemize}
+  \item Agora resta apenas a coluna D3 (demanda 40).
+  \item Passos realizados:
+    \begin{enumerate}
+      \item Alocamos $x_{3,3}=15$ (restante de O3).
+      \item Alocamos $x_{2,3}=5$ (restante de O2).
+      \item Alocamos $x_{1,3}=20$ (restante de O1).
+    \end{enumerate}
+\end{itemize}
+
+\bigskip
+\centering
+\begin{tabular}{c|ccc|c}
+ & D1 & D2 & D3 & Oferta \\ \hline
+O1 & 6 & 8 & \textbf{10 (20)} & 0 \\
+O2 & 7 (10) & 11 & \textbf{11 (5)} & 0 \\
+O3 & 4 & 5 (10) & \textbf{12 (15)} & 0 \\ \hline
+Demanda & 0 & 0 & 40 & 
+\end{tabular}
+\end{frame}
+
+\begin{frame}
+\frametitle{Solução inicial (Vogel) e Custo Total}
+\[
+X=
+\begin{pmatrix}
+0 & 0 & 20 \\
+10 & 0 & 5 \\
+0 & 10 & 15
+\end{pmatrix}
+\]
+
+\bigskip
+\begin{itemize}
+  \item Cálculo do custo:
+    \[
+    Z = 7\cdot10 + 10\cdot20 + 5\cdot10 + 11\cdot5 + 12\cdot15 = 555
+    \]
+  \item Solução encontrada pelo Método de Vogel (alocação inicial): \(\boxed{Z=555}\).
+\end{itemize}
+\end{frame}
+
+\begin{frame}
 \frametitle{Exercício - Método de Vogel}
 \begin{table}[]
 \centering
@@ -248,7 +338,7 @@ Determine o plano de transporte ótimo utilizando o \textbf{Método de Aproxima�
 \begin{block}{Condição de Ótimo}
 Uma solução é \textbf{ótima} se e somente se:
 \[
-\Delta_{ij} \geq 0 \quad \forall (i,j) \text{ não básicos.}
+\Delta_{ij} \geqslant 0 \quad \forall (i,j) \text{ não básicos.}
 \]
 \end{block}
 
@@ -275,7 +365,7 @@ Uma solução é \textbf{ótima} se e somente se:
     \]
     \item \textbf{Verificar a otimalidade:}
     \begin{itemize}
-        \item Se todos os \(\Delta_{ij} \ge 0\), pare, a solução é ótima;
+        \item Se todos os \(\Delta_{ij} \geqslant 0\), pare, a solução é ótima;
         \item Caso contrário, vá para o próximo passo.
     \end{itemize}
 \end{enumerate}
@@ -292,7 +382,7 @@ Uma solução é \textbf{ótima} se e somente se:
     \end{itemize}
     \item \textbf{Construir o ciclo fechado:}
     \begin{itemize}
-        \item Alterne entre células básicas e não básicas, formando um caminho fechado;
+        \item Alterne entre células básicas, formando um caminho fechado;
         \item Sinalize os movimentos com \(+\) e \(-\);
     \end{itemize}
     \item \textbf{Atualizar as alocações:}
@@ -300,7 +390,7 @@ Uma solução é \textbf{ótima} se e somente se:
     x_{ij} = x_{ij} \pm \theta
     \]
     onde \(\theta\) é o menor valor das células marcadas com \(-\);
-    \item \textbf{Repetir o processo} até que todos os \(\Delta_{ij} \ge 0\).
+    \item \textbf{Repetir o processo} até que todos os \(\Delta_{ij} \geqslant  0\).
 \end{enumerate}
 \end{frame}
 
@@ -326,13 +416,31 @@ A partir da solução inicial obtida pelo Método de Vogel, aplique o \textbf{M�
 \end{frame}
 
 \begin{frame}
+\frametitle{Exercício - Método u-v (MODI)}
+\begin{table}[]
+\centering
+\caption{Tabela de custos e demandas}
+\begin{tabular}{c|cccc|c}
+\hline
+ & D1 & D2 & D3 & D4 & Oferta \\ \hline
+O1 & 10 (5) & 2 (10) & 20 & 11 & 15 \\
+O2 & 12 & 7 (5) & 9 (15) & 20 (5) & 25 \\
+O3 & 4 & 14 & 16 & 19 (10) & 10 \\ \hline
+Demanda & 5 & 15 & 15 & 15 & \\ \hline
+\end{tabular}
+\end{table}
+\begin{block}{Enunciado}
+Determine o plano de transporte ótimo utilizando o \textbf{Método de Aproximação de Vogel}, de modo a minimizar o custo total.
+\end{block}
+\end{frame}
+
+\begin{frame}
 \frametitle{Vantagens do Método u-v (MODI)}
 
 \begin{itemize}
     \item É o \textbf{método mais eficiente} para testar e melhorar soluções do problema do transporte;
     \item Evita o uso completo do \textbf{Simplex}, tornando o processo mais direto;
     \item Facilita a visualização da estrutura do problema;
-    \item Pode ser facilmente implementado em planilhas eletrônicas ou softwares de otimização.
 \end{itemize}
 \end{frame}
 
@@ -357,5 +465,16 @@ A partir da solução inicial obtida pelo Método de Vogel, aplique o \textbf{M�
     \item O problema do transporte é uma aplicação clássica da programação linear com grande relevância prática;
     \item Seu estudo auxilia na compreensão de modelos de otimização com restrições de capacidade e custo;
     \item Métodos como o de Vogel e o MODI permitem soluções eficientes e economicamente viáveis.
+\end{itemize}
+\end{frame}
+
+
+\subsection{Referências}
+\begin{frame}
+\frametitle{Referências}
+\begin{itemize}
+    \item OLIVEIRA, Jéssica Moia de. O problema de transporte. 2016. Projeto Supervisionado II (Graduação em Matemática, Estatística e Computação Científica) – Universidade Estadual de Campinas, Instituto de Matemática, Estatística e Computação Científica, Campinas, 2016. Orientador: Aurelio Ribeiro Leite de Oliveira.
+    \item TAHA, Hamdy A. Operations research: an introduction. 10th ed. Global Edition. Harlow: Pearson Education, 2017.
+    \item BYJU’S. Vogel’s Approximation Method. Disponível em: https://byjus.com/maths/vogels-approximation-method/
 \end{itemize}
 \end{frame}
