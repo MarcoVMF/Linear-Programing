@@ -179,20 +179,20 @@ Monte o tableau simplex para as variáveis:
 
 \begin{table}
 \centering
-\begin{tabular}{c|ccccccc|c}
-\textbf{Base} & $x_{11}$ & $x_{12}$ & $x_{13}$ & $x_{21}$ & $x_{22}$ & $x_{23}$ & $x_{31}$ & $b$ \\
+\begin{tabular}{c|ccccccccc|c}
+\textbf{Base} & $x_{11}$ & $x_{12}$ & $x_{13}$ & $x_{21}$ & $x_{22}$ & $x_{23}$ & $x_{31}$ & $x_{32}$ & $x_{33}$ & $b$ \\
 \hline
-Agente 1 & 1 & 1 & 1 & 0 & 0 & 0 & 0 & 1 \\
-Agente 2 & 0 & 0 & 0 & 1 & 1 & 1 & 0 & 1 \\
-Agente 3 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 1 \\
-Tarefa 1 & 1 & 0 & 0 & 1 & 0 & 0 & 1 & 1 \\
-Tarefa 2 & 0 & 1 & 0 & 0 & 1 & 0 & 0 & 1 \\
-Tarefa 3 & 0 & 0 & 1 & 0 & 0 & 1 & 0 & 1 \\
+Agente 1 & 1 & 1 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 1 \\
+Agente 2 & 0 & 0 & 0 & 1 & 1 & 1 & 0 & 0 & 0 & 1 \\
+Agente 3 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 1 & 1 & 1 \\
+Tarefa 1 & 1 & 0 & 0 & 1 & 0 & 0 & 1 & 0 & 0 & 1 \\
+Tarefa 2 & 0 & 1 & 0 & 0 & 1 & 0 & 0 & 1 & 0 & 1 \\
+Tarefa 3 & 0 & 0 & 1 & 0 & 0 & 1 & 0 & 0 & 1 & 1 \\
+\hline
+$z$ & 15 & 20 & 17 & 13 & 18 & 21 & 19 & 14 & 16 & 0 \\
 \end{tabular}
-\caption{Tableau inicial das variáveis $x_{ij}$ e restrições.}
+\caption{Tableau inicial completo com linha do $z$ e restrições.}
 \end{table}
-
-O método simplex tenta encontrar uma solução ótima testando possíveis bases válidas, usando pivoteamento; como todas restrições e custos são inteiros, espera-se solução inteira.
 
 \textbf{Observação}: Para problemas maiores o tableau cresce e pode ficar impraticável. Algoritmos especializados (Húngaro) resolvem com muito mais eficiência.
 \end{frame}
@@ -335,6 +335,61 @@ Ag1 & \alert{0} \\
 \textbf{Custo total:} $13 + 14 + 17 = 44$
 \end{frame}
 
+\begin{frame}{E se agentes $\neq$ tarefas?}
+  O modelo clássico do problema da atribuição supõe que o número de agentes é igual ao número de tarefas.
+  \vspace{0.4cm}
+ 
+  Mas o que acontece se essa relação for diferente?
+  \begin{itemize}
+    \item Como lidar com cenários onde há mais agentes do que tarefas, ou vice-versa?
+    \item O problema de atribuição ainda pode ser resolvido?
+    \item Existem variantes do modelo clássico para essas situações?
+  \end{itemize}
+ 
+  \vspace{0.3cm}
+  A seguir, veja como o problema é adaptado para esses casos.
+\end{frame}
+
+
+\begin{frame}{Casos com Número Diferente de Agentes e Tarefas}
+  \textbf{Atribuição Desequilibrada:}
+  \begin{itemize}
+    \item Se o número de agentes $\neq$ número de tarefas, adiciona-se agentes ou tarefas fictícias na matriz de custos.
+    \item Permite usar o mesmo modelo clássico, preenchendo as lacunas com custos nulos ou elevados.
+  \end{itemize}
+  
+  \vspace{0.3cm}
+  \textbf{Problema de Atribuição Generalizada (GAP):}
+  \begin{itemize}
+    \item Permite que um agente execute múltiplas tarefas, ou que tarefas tenham demandas específicas.
+    \item Utiliza restrições adicionais de capacidade e exige técnicas diferentes de resolução, como branch and bound ou algoritmos heurísticos.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Atribuição Generalizada (GAP)}
+  \textbf{O que é?}
+  \begin{itemize}
+    \item Variante do problema clássico onde cada agente pode executar múltiplas tarefas, respeitando restrições de capacidade.
+    \item Cada tarefa deve ser atribuída exatamente a um agente, mas agentes podem acumular várias tarefas, até atingir seu limite.
+  \end{itemize}
+  
+  \vspace{0.3cm}
+  \textbf{Exemplo prático:}
+  \begin{itemize}
+    \item Alocação de entregas entre veículos, considerando a capacidade de carga de cada um.
+    \item Distribuição de aulas entre professores, respeitando cargas horárias máximas.
+  \end{itemize}
+
+  \vspace{0.3cm}
+  \textbf{Como resolver?}
+  \begin{itemize}
+    \item Utiliza Programação Inteira e métodos como branch and bound, heurísticas e relaxação lagrangeana.
+    \item É considerado um problema difícil (NP-difícil) para instâncias grandes.
+  \end{itemize}
+\end{frame}
+
+
+
 % Slide 8: Exercício Prático
 \begin{frame}{Exercício}
   Considere a seguinte matriz de custos:
@@ -352,6 +407,20 @@ Ag1 & \alert{0} \\
 
   \textbf{Pergunta}: Usando o Algoritmo Húngaro, encontre a atribuição de menor custo e justifique cada passo.
 \end{frame}
+
+\begin{frame}{Resultado do Exercício}
+  \textbf{Atribuição de menor custo:}
+  
+  \begin{itemize}
+    \item Agente 1 $\rightarrow$ Tarefa 2 (custo 7)
+    \item Agente 2 $\rightarrow$ Tarefa 1 (custo 6)
+    \item Agente 3 $\rightarrow$ Tarefa 3 (custo 6)
+  \end{itemize}
+  
+  \vspace{0.3cm}
+  \textbf{Custo total mínimo:} $7 + 6 + 6 = 19$
+\end{frame}
+
 
 \nocite{*}
 
