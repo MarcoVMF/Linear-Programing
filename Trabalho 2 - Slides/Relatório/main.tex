@@ -1,0 +1,1102 @@
+\documentclass[12pt, a4paper, oneside]{report}
+
+% --- PACOTES BÁSICOS ---
+\usepackage[utf8]{inputenc}      % Permite acentuação
+\usepackage[T1]{fontenc}         % Fonte padrão LaTeX
+\usepackage[brazilian]{babel}    % Tradução para português do Brasil
+\usepackage{indentfirst}         % Indenta o primeiro parágrafo de cada seção
+\usepackage{float}
+
+% --- PACOTES DE FORMATAÇÃO (ABNT) ---
+\usepackage[left=3cm, right=2cm, top=3cm, bottom=2cm]{geometry} % Margens ABNT
+\usepackage{setspace}            % Para alterar o espaçamento entre linhas
+\usepackage{lscape}              % Para páginas em modo paisagem (se necessário)
+
+% --- PACOTES DE CONTEÚDO ---
+\usepackage{amsmath, amssymb}    % Para equações matemáticas avançadas
+\usepackage{graphicx}            % Para incluir imagens
+\usepackage{booktabs}            % Para tabelas com qualidade (opcional)
+\usepackage[hidelinks]{hyperref} % Para links (ex: sumário)
+
+% --- TÍTULOS DE SEÇÃO EM MAIÚSCULO (Padrão ABNT) ---
+\usepackage{sectsty}
+\chapterfont{\MakeUppercase}
+\sectionfont{\MakeUppercase}
+\subsectionfont{\MakeUppercase} % Descomente se quiser subseções em maiúsculo também
+
+% --- Configura espaçamento do Sumário ---
+\usepackage{tocloft}
+\renewcommand{\cftchapleader}{\cftdotfill{\cftdotsep}} % Adiciona pontilhado para capítulos
+
+\begin{document}
+
+% -------------------------------------------------------------------
+% ELEMENTOS PRÉ-TEXTUAIS
+% -------------------------------------------------------------------
+
+% --- CAPA ---
+\begin{titlepage}
+    \begin{center}
+        \vspace*{2cm}
+        
+        \large
+        UNIVERSIDADE ESTADUAL PAULISTA ``JÚLIO DE MESQUITA FILHO'' \\
+        FACULDADE DE CIÊNCIA E TECNOLOGIA (FCT)
+        
+        \vspace*{4cm}
+        
+        \large
+        IGOR J. RODRIGUES \\
+        LEONARDO S. CORADELI \\
+        LUCAS V. C. IKEDA \\
+        MARCO V. M. FARIA
+        
+        \vfill
+        
+        \huge
+        \textbf{ESTUDO SOBRE PROBLEMAS DE OTIMIZAÇÃO: TRANSPORTE, ATRIBUIÇÃO E MENOR CAMINHO}
+        
+        \vspace*{5cm}
+        
+        \large
+        Presidente Prudente
+        
+        2025
+    \end{center}
+\end{titlepage}
+
+% --- FOLHA DE ROSTO ---
+\begin{titlepage}
+    \begin{center}
+        \vspace*{2cm}
+        
+        \large
+        IGOR J. RODRIGUES \\
+        LEONARDO S. CORADELI \\
+        LUCAS V. C. IKEDA \\
+        MARCO V. M. FARIA
+        
+        \vfill
+        
+        \huge
+        \textbf{ESTUDO SOBRE PROBLEMAS DE OTIMIZAÇÃO: TRANSPORTE, ATRIBUIÇÃO E MENOR CAMINHO}
+        
+        \vspace*{3cm}
+    \end{center}
+    
+    \begin{flushright}
+        \large
+        \begin{minipage}{0.6\textwidth} % Minipágina para o texto de natureza
+            \singlespacing % Espaçamento simples para este bloco
+            Trabalho apresentado à disciplina de Programação Linear do curso de Ciência da Computação da Universidade Estadual Paulista (UNESP), Campus de Presidente Prudente.
+            
+            \vspace*{2cm}
+        \end{minipage}
+    \end{flushright}
+    
+    \vfill
+    
+    \begin{center}
+        \large
+        Presidente Prudente
+        
+        2025
+    \end{center}
+\end{titlepage}
+
+% --- RESUMO ---
+\clearpage
+\begin{singlespacing} % Resumo é em espaço simples
+    \chapter*{Resumo}
+    \addcontentsline{toc}{chapter}{Resumo} % Adiciona ao Sumário
+    
+    A Pesquisa Operacional (PO) oferece um arsenal de ferramentas matemáticas para a tomada de decisão e otimização de sistemas complexos. Este trabalho foca na análise de três problemas clássicos e fundamentais da PO: o Problema do Transporte, o Problema da Atribuição e o Problema do Menor Caminho. Cada um desses problemas é explorado desde sua definição conceitual e aplicações práticas até sua formulação matemática como um Problema de Programação Linear (PPL). O estudo detalha os métodos de resolução específicos para cada caso, comparando a eficiência de algoritmos especializados, como o Algoritmo Húngaro para atribuição, e os algoritmos de Dijkstra e Bellman-Ford para caminhos mínimos, com a abordagem genérica do método Simplex. O objetivo é consolidar o entendimento teórico e prático desses modelos, demonstrando suas particularidades, restrições e a importância da escolha do método de solução adequado para garantir a eficiência computacional e a otimalidade.
+    
+    \vfill % Empurra as palavras-chave para o final da página
+    
+    \noindent
+    \textbf{Palavras-chave:} Pesquisa Operacional. Otimização. Problema do Transporte. Problema da Atribuição. Problema do Menor Caminho. Programação Linear.
+\end{singlespacing}
+\clearpage
+
+% --- ABSTRACT ---
+
+% --- SUMÁRIO ---
+\tableofcontents % Gera o sumário automaticamente
+\clearpage
+
+
+% -------------------------------------------------------------------
+% ELEMENTOS TEXTUAIS
+% -------------------------------------------------------------------
+\onehalfspacing % Define o espaçamento 1.5 para o corpo do texto
+
+\chapter{Introdução}
+\label{chap:intro}
+
+A Pesquisa Operacional (PO) é um ramo da matemática aplicada que se dedica ao desenvolvimento e aplicação de métodos analíticos para auxiliar na tomada de decisões. Seu objetivo primordial é a otimização, seja ela a maximização de lucros e eficiência ou a minimização de custos, tempo e riscos. Dentro do vasto campo da PO, os problemas de otimização em redes e alocação ocupam um lugar de destaque devido à sua ampla aplicabilidade em logística, finanças, engenharia e ciência da computação.
+
+Este trabalho se propõe a analisar três dos problemas mais fundamentais e didáticos da Pesquisa Operacional: o Problema do Transporte, o Problema da Atribuição e o Problema do Menor Caminho.
+
+O Problema do Transporte busca determinar a forma mais econômica de expedir quantidades de um bem de diversas origens para diversos destinos. O Problema da Atribuição, um caso particular do transporte, foca em designar agentes a tarefas de forma otimizada (um-para-um), minimizando o custo total. Por fim, o Problema do Menor Caminho, onipresente em sistemas de navegação e roteamento de redes, visa encontrar a rota de menor custo (distância, tempo ou latência) entre dois pontos em um grafo ponderado.
+
+Para cada um desses problemas, este relatório apresentará a definição formal, a formulação matemática como um Problema de Programação Linear (PPL) e os algoritmos especializados desenvolvidos para sua solução, comparando suas características e eficiência.
+
+\chapter{O Problema do Transporte}
+\label{chap:transporte}
+
+% Conteúdo do Frame "Definição do Problema do Transporte"
+\begin{itemize}
+    \item É uma classe especial dentro dos problemas de programação linear que trata da distribuição de mercadorias de várias origens para vários destinos;
+    \item O objetivo é encontrar um plano de transporte que \textbf{minimize o custo total} de envio, respeitando as restrições de \textbf{oferta e demanda}.
+\end{itemize}
+
+% A imagem que estava na segunda coluna
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{images/Figura-1-Problema-do-transporte.png}
+    \caption{Diagrama esquemático do Problema do Transporte.}
+    \label{fig:diagrama_transporte}
+\end{figure}
+
+
+\subsection{Exemplo Prático}
+\label{subsec:exemplo_pratico}
+
+% Conteúdo do Frame "Exemplo Prático"
+\begin{itemize}
+    \item Uma empresa de calçados possui três fábricas e precisa distribuir sua produção para cinco lojas espalhadas pelo país. Cada fábrica possui uma capacidade máxima de produção semanal, e cada loja possui uma demanda específica a ser atendida.
+    \item O custo de transporte de um par de sapatos entre cada fábrica e cada loja é conhecido e varia conforme a distância e o tipo de transporte utilizado.
+    \item As capacidades de produção (oferta) das fábricas são: \textbf{200}, \textbf{300} e \textbf{250 pares}, respectivamente.
+    \item As demandas das lojas são: \textbf{150}, \textbf{180}, \textbf{100}, \textbf{200} e \textbf{120 pares}, respectivamente.
+\end{itemize}
+
+% Tabela do "Exemplo Prático"
+\begin{table}[htbp]
+    \centering
+    \caption{Tabela de Custos de Transporte (R\$ por par)}
+    \label{tab:custos_exemplo}
+    \begin{tabular}{c|ccccc|c}
+    \hline
+    & L1 & L2 & L3 & L4 & L5 & Oferta \\ \hline
+    F1 & 8 & 6 & 10 & 9 & 7 & 200 \\
+    F2 & 9 & 12 & 13 & 7 & 5 & 300 \\
+    F3 & 14 & 9 & 16 & 5 & 8 & 250 \\ \hline
+    Demanda & 150 & 180 & 100 & 200 & 120 & \\ \hline
+    \end{tabular}
+\end{table}
+
+% O slide "Formulação do Problema" e "Interpretação" logicamente
+% pertencem à subsection "Modelando o Exemplo", que estava vazia.
+% Vou colocá-los lá.
+
+\subsection{Formulação Matemática}
+\label{subsec:formulacao_matematica}
+
+% Conteúdo do Frame "Formulação Matemática" (Geral)
+\begin{itemize}
+    \item \textbf{Variáveis de decisão:} 
+    \[
+    x_{ij} = \text{quantidade transportada da origem } i \text{ para o destino } j
+    \]
+    \item \textbf{Função objetivo:}
+    \[
+    \min Z = \sum_{i=1}^{m} \sum_{j=1}^{n} c_{ij}x_{ij}
+    \]
+    onde \(c_{ij}\) representa o custo de transporte por unidade.
+    \item \textbf{Restrições:}
+    \begin{align*}
+    \sum_{j=1}^{n} x_{ij} &= a_i, && \forall i = 1, \dots, m \quad \text{(oferta)}\\
+    \sum_{i=1}^{m} x_{ij} &= b_j, && \forall j = 1, \dots, n \quad \text{(demanda)}\\
+    x_{ij} &\ge 0, && \forall i,j
+    \end{align*}
+\end{itemize}
+
+
+\subsection{Modelando o Exemplo}
+\label{subsec:modelando_exemplo}
+
+% Conteúdo do Frame "Formulação do Problema" (do exemplo)
+\subsubsection*{Formulação das Restrições do Exemplo}
+
+\textbf{Restrições de Oferta (Capacidade de Produção):}
+\[
+\begin{aligned}
+x_{11} + x_{12} + x_{13} + x_{14} + x_{15} &= 200 \\
+x_{21} + x_{22} + x_{23} + x_{24} + x_{25} &= 300 \\
+x_{31} + x_{32} + x_{33} + x_{34} + x_{35} &= 250
+\end{aligned}
+\]
+
+\textbf{Restrições de Demanda (Necessidade das Lojas):}
+\[
+\begin{aligned}
+x_{11} + x_{21} + x_{31} &= 150 \\
+x_{12} + x_{22} + x_{32} &= 180 \\
+x_{13} + x_{23} + x_{33} &= 100 \\
+x_{14} + x_{24} + x_{34} &= 200 \\
+x_{15} + x_{25} + x_{35} &= 120
+\end{aligned}
+\]
+
+\textbf{Restrições de não negatividade:}
+\[
+x_{ij} \ge 0 \quad \forall i,j
+\]
+
+% Conteúdo do Frame "Interpretação do Problema"
+\subsubsection*{Interpretação do Exemplo}
+\begin{itemize}
+    \item O objetivo é determinar quantos pares de sapatos cada fábrica deve enviar para cada loja de forma a \textbf{minimizar o custo total de transporte}.
+    \item Todas as demandas devem ser atendidas, e nenhuma fábrica pode produzir mais do que sua capacidade máxima.
+    \item Esse tipo de problema é conhecido como \textbf{Problema do Transporte Balanceado}, pois a soma das ofertas é igual à soma das demandas:
+    \[
+    200 + 300 + 250 = 150 + 180 + 100 + 200 + 120 = 750
+    \]
+    \item Pode ser resolvido utilizando métodos como o \textbf{Canto Noroeste}, \textbf{Vogel}, \textbf{Menor Custo}
+\end{itemize}
+
+% Nova seção sobre problemas desbalanceados
+\subsubsection*{Equilíbrio entre Oferta e Demanda (Problemas Desbalanceados)}
+\label{ssub:desbalanceado}
+
+Os métodos de solução clássicos, como o Método de Vogel e o MODI, exigem que o problema esteja \textbf{balanceado}, ou seja, que a Oferta Total seja exatamente igual à Demanda Total.
+
+\[
+\sum_{i=1}^{m} \text{Oferta}_i = \sum_{j=1}^{n} \text{Demanda}_j
+\]
+
+Quando isso não ocorre, o problema é dito \textbf{desbalanceado} e precisa ser ajustado antes da resolução, criando-se rotas "fictícias" para equilibrar o modelo:
+
+\begin{itemize}
+    \item \textbf{Caso 1: Oferta Total > Demanda Total} (Excesso de oferta)
+    \begin{itemize}
+        \item \textbf{Solução:} Cria-se um \textbf{destino fictício} (uma coluna "Folga" na tabela).
+        \item \textbf{Demanda Fictícia:} A demanda desse destino será a diferença ($\text{Oferta Total} - \text{Demanda Total}$).
+        \item \textbf{Custo Fictício:} O custo de envio ($c_{ij}$) de todas as origens para esse destino fictício é \textbf{zero}. (Isso representa a mercadoria que "sobra" e não é enviada).
+    \end{itemize}
+
+    \item \textbf{Caso 2: Oferta Total < Demanda Total} (Excesso de demanda)
+    \begin{itemize}
+        \item \textbf{Solução:} Cria-se uma \textbf{origem fictícia} (uma linha "Falta" na tabela).
+        \item \textbf{Oferta Fictícia:} A oferta dessa origem será a diferença ($\text{Demanda Total} - \text{Oferta Total}$).
+        \item \textbf{Custo Fictício:} O custo de envio ($c_{ij}$) dessa origem fictícia para todos os destinos é \textbf{zero}. (Isso representa a demanda que não será atendida).
+    \end{itemize}
+\end{itemize}
+
+Após a adição dessa origem ou destino fictício, o problema torna-se balanceado e pode ser resolvido pelos métodos padrões.
+
+\subsection{Métodos de Solução}
+\label{subsec:metodos_solucao}
+
+% Conteúdo do Frame "Métodos de Solução"
+\begin{itemize}
+    \item Método do Canto Noroeste;
+    \item Método do Custo Mínimo;
+    \item \textbf{Método de Vogel.}
+\end{itemize}
+
+
+\subsection{Método de Vogel}
+\label{subsec:metodo_vogel}
+
+% Conteúdo do Frame "Método de Vogel" (definição)
+\begin{itemize}
+    \item O \textbf{Método de Vogel} é uma técnica heurística usada para encontrar uma \textbf{solução inicial viável} para o problema do transporte.
+    \item Ele busca equilibrar \textbf{custo e penalidade}, tentando minimizar o custo total logo na alocação inicial.
+    \item O princípio é penalizar as escolhas caras: a cada etapa, calcula-se o quanto se “perde” ao não escolher a opção mais barata de cada linha e coluna.
+\end{itemize}
+
+% Conteúdo do Frame "Etapas do Método de Vogel"
+\subsubsection*{Etapas do Método de Vogel}
+\begin{enumerate}
+    \item \textbf{Calcular as penalidades:} 
+    Para cada linha e coluna, determine a diferença entre os dois menores custos dessa linha/coluna. 
+    Essa diferença representa a \textbf{penalidade}.
+    
+    \item \textbf{Identificar a maior penalidade:} 
+    Escolha a linha ou coluna com a penalidade mais alta (ou seja, onde o erro seria mais caro se não for escolhida a menor rota).
+    
+    \item \textbf{Selecionar a menor célula de custo} nessa linha ou coluna e alocar:
+    \[
+    x_{ij} = \min(\text{oferta}_i, \text{demanda}_j)
+    \]
+    
+    \item \textbf{Atualizar as ofertas e demandas:} 
+    Subtraia o valor alocado e risque a linha ou coluna esgotada.
+    
+    \item \textbf{Repetir o processo} até que todas as ofertas e demandas sejam atendidas.
+\end{enumerate}
+
+% Conteúdo do Frame "Exemplo - Método de Vogel"
+\subsubsection*{Exemplo de Aplicação do Método de Vogel}
+
+\begin{table}[htbp]
+    \centering
+    \caption{Tabela de custos e demandas (Exemplo Vogel)}
+    \label{tab:vogel_ex_inicio}
+    \begin{tabular}{c|ccc|c}
+    \hline
+    & D1 & D2 & D3 & Oferta \\ \hline
+    O1 & 6 & 8 & 10 & 20 \\
+    O2 & 7 & 11 & 11 & 15 \\
+    O3 & 4 & 5 & 12 & 25 \\ \hline
+    Demanda & 10 & 10 & 40 &  \\ \hline
+    \end{tabular}
+\end{table}
+
+% Conteúdo do Frame "Vogel — Iteração 1"
+\subsubsection*{Vogel — Iteração 1}
+\begin{itemize}
+    \item Penalidades (diferença entre dois menores custos):
+    \begin{itemize}
+        \item Linhas: $r_1=2,\; r_2=4,\; r_3=1$
+        \item Colunas: $c_1=2,\; c_2=3,\; c_3=1$
+    \end{itemize}
+    \item Maior penalidade: \textbf{linha O2} ($r_2=4$). Menor custo nessa linha: $c_{2,1}=7$.
+    \item Alocação: $x_{2,1}=\min(15,10)=10$.
+\end{itemize}
+
+\begin{table}[htbp]
+    \centering
+    \caption{Vogel - Iteração 1}
+    \label{tab:vogel_it1}
+    \begin{tabular}{c|ccc|c}
+    & D1 & D2 & D3 & Oferta \\ \hline
+    O1 & 6 & 8 & 10 & 20 \\
+    O2 & \textbf{7 (10)} & 11 & 11 & 5 \\
+    O3 & 4 & 5 & 12 & 25 \\ \hline
+    Demanda & 0 & 10 & 40 & 
+    \end{tabular}
+\end{table}
+
+% Conteúdo do Frame "Vogel — Iteração 2"
+\subsubsection*{Vogel — Iteração 2}
+\begin{itemize}
+    \item Penalidades (após atualização):
+    \begin{itemize}
+        \item Linhas: $r_1=2,\; r_2=0,\; r_3=7$
+        \item Colunas: $c_2=3,\; c_3=1$
+    \end{itemize}
+    \item Maior penalidade: \textbf{linha O3} ($r_3=7$). Menor custo nessa linha: $c_{3,2}=5$.
+    \item Alocação: $x_{3,2}=\min(25,10)=10$.
+\end{itemize}
+
+\begin{table}[htbp]
+    \centering
+    \caption{Vogel - Iteração 2}
+    \label{tab:vogel_it2}
+    \begin{tabular}{c|ccc|c}
+    & D1 & D2 & D3 & Oferta \\ \hline
+    O1 & 6 & 8 & 10 & 20 \\
+    O2 & 7 (10) & 11 & 11 & 5 \\
+    O3 & 4 & \textbf{5 (10)} & 12 & 15 \\ \hline
+    Demanda & 0 & 0 & 40 & 
+    \end{tabular}
+\end{table}
+
+% Conteúdo do Frame "Vogel — Iterações 3,4 e 5"
+\subsubsection*{Vogel — Iterações 3, 4 e 5 (coluna D3)}
+\begin{itemize}
+    \item Agora resta apenas a coluna D3 (demanda 40).
+    \item Passos realizados:
+    \begin{enumerate}
+        \item Alocamos $x_{3,3}=15$ (restante de O3).
+        \item Alocamos $x_{2,3}=5$ (restante de O2).
+        \item Alocamos $x_{1,3}=20$ (restante de O1).
+    \end{enumerate}
+\end{itemize}
+
+\begin{table}[htbp]
+    \centering
+    \caption{Vogel - Iterações 3, 4 e 5}
+    \label{tab:vogel_it345}
+    \begin{tabular}{c|ccc|c}
+    & D1 & D2 & D3 & Oferta \\ \hline
+    O1 & 6 & 8 & \textbf{10 (20)} & 0 \\
+    O2 & 7 (10) & 11 & \textbf{11 (5)} & 0 \\
+    O3 & 4 & 5 (10) & \textbf{12 (15)} & 0 \\ \hline
+    Demanda & 0 & 0 & 40 & 
+    \end{tabular}
+\end{table}
+
+% Conteúdo do Frame "Solução inicial (Vogel) e Custo Total"
+\subsubsection*{Solução inicial (Vogel) e Custo Total}
+\[
+X=
+\begin{pmatrix}
+0 & 0 & 20 \\
+10 & 0 & 5 \\
+0 & 10 & 15
+\end{pmatrix}
+\]
+
+\begin{itemize}
+    \item Cálculo do custo:
+    \[
+    Z = 7\cdot10 + 10\cdot20 + 5\cdot10 + 11\cdot5 + 12\cdot15 = 555
+    \]
+    \item Solução encontrada pelo Método de Vogel (alocação inicial): \(\boxed{Z=555}\).
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{images/Exemplo 01.jpg} 
+    \caption{Resolução exemplo 1.}
+    \label{fig:exemplo_1_imagem}
+\end{figure}
+
+% Conteúdo do Frame "Exercício - Método de Vogel"
+\subsubsection*{Exercício - Método de Vogel}
+
+\begin{table}[htbp]
+    \centering
+    \caption{Tabela de custos e demandas (Exercício)}
+    \label{tab:exercicio_vogel}
+    \begin{tabular}{c|cccc|c}
+    \hline
+    & D1 & D2 & D3 & D4 & Oferta \\ \hline
+    O1 & 5 & 8 & 6 & 10 & 30 \\
+    O2 & 9 & 7 & 4 & 8 & 40 \\
+    O3 & 6 & 5 & 8 & 9 & 50 \\ \hline
+    Demanda & 20 & 30 & 25 & 45 & \\ \hline
+    \end{tabular}
+\end{table}
+
+\subsubsection*{Enunciado} % Convertido do \block
+Determine o plano de transporte ótimo utilizando o \textbf{Método de Aproximação de Vogel}, de modo a minimizar o custo total.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{images/Exercício 1.jpg} 
+    \caption{Resolução exercício 1.}
+    \label{fig:exercicio_1_imagem}
+\end{figure}
+
+% Conteúdo do Frame "Características do Método de Vogel"
+\subsubsection*{Características do Método de Vogel}
+\begin{itemize}
+    \item Fornece soluções iniciais geralmente \textbf{mais próximas da ótima} do que o Método do Canto Noroeste ou o do Custo Mínimo;
+    \item Requer cálculos adicionais, mas reduz o número de iterações posteriores no método de otimização (Simplex);
+    \item É amplamente utilizado em problemas de transporte reais devido ao seu \textbf{bom equilíbrio entre precisão e esforço computacional}.
+\end{itemize}
+
+
+\subsection{Método u-v (MODI)}
+\label{subsec:metodo_modi}
+
+% Conteúdo do Frame "Método u-v (MODI)" (definição)
+\begin{itemize}
+    \item Também conhecido como \textbf{Método MODI} (\textit{Modified Distribution Method});
+    \item É utilizado para \textbf{verificar a otimalidade} de uma solução viável inicial do problema do transporte;
+    \item Permite identificar se é possível \textbf{reduzir o custo total} ajustando a alocação das variáveis não básicas;
+    \item É uma forma simplificada de aplicar o \textbf{Simplex} ao problema do transporte.
+\end{itemize}
+
+% Conteúdo do Frame "Ideia do Método u-v"
+\subsubsection*{Ideia do Método u-v}
+\begin{itemize}
+    \item O método se baseia na atribuição de dois conjuntos de variáveis:
+    \[
+    u_i \text{ (para as origens) e } v_j \text{ (para os destinos)}
+    \]
+    \item Para cada célula básica \( (i,j) \), temos:
+    \[
+    c_{ij} = u_i + v_j
+    \]
+    \item As células não básicas são então avaliadas pelo \textbf{custo reduzido}:
+    \[
+    \Delta_{ij} = c_{ij} - (u_i + v_j)
+    \]
+\end{itemize}
+
+% Conteúdo do Frame "Critério de Otimalidade"
+\subsubsection*{Critério de Otimalidade}
+
+% O \begin{block} vira um ambiente \quotation
+\begin{quotation}
+\textbf{Condição de Ótimo:}
+Uma solução é \textbf{ótima} se e somente se:
+\[
+\Delta_{ij} \geqslant 0 \quad \forall (i,j) \text{ não básicos.}
+\]
+\end{quotation}
+
+\begin{itemize}
+    \item Se todos os \(\Delta_{ij}\) forem positivos ou nulos, o custo total atual é mínimo;
+    \item Caso exista algum \(\Delta_{ij} < 0\), há oportunidade de melhoria no custo, a solução ainda não é ótima;
+    \item Nesse caso, deve-se ajustar a alocação construindo um \textbf{ciclo fechado} para redistribuir as quantidades.
+\end{itemize}
+
+% Conteúdo do Frame "Etapas do Método MODI"
+\subsubsection*{Etapas do Método MODI}
+\begin{enumerate}
+    \item \textbf{Obter uma solução inicial viável} (ex: Método de Vogel);
+    \item \textbf{Calcular os valores de \(u_i\) e \(v_j\):}
+    \begin{itemize}
+        \item Escolha arbitrariamente \(u_1 = 0\);
+        \item Para cada célula básica, use \(c_{ij} = u_i + v_j\) para determinar os demais valores;
+    \end{itemize}
+    \item \textbf{Calcular os custos reduzidos:}
+    \[
+    \Delta_{ij} = c_{ij} - (u_i + v_j)
+    \]
+    \item \textbf{Verificar a otimalidade:}
+    \begin{itemize}
+        \item Se todos os \(\Delta_{ij} \geqslant 0\), pare, a solução é ótima;
+        \item Caso contrário, vá para o próximo passo.
+    \end{itemize}
+\end{enumerate}
+
+% Conteúdo do Frame "Etapas do Método MODI (continuação)"
+\subsubsection*{Etapas do Método MODI (continuação)}
+\begin{enumerate}
+    \setcounter{enumi}{4} % Continua a numeração anterior
+    \item \textbf{Identificar a célula com o menor \(\Delta_{ij}\):}
+    \begin{itemize}
+        \item Essa será a célula \textbf{candidata a entrar na base};
+    \end{itemize}
+    \item \textbf{Construir o ciclo fechado:}
+    \begin{itemize}
+        \item Alterne entre células básicas, formando um caminho fechado;
+        \item Sinalize os movimentos com \(+\) e \(-\);
+    \end{itemize}
+    \item \textbf{Atualizar as alocações:}
+    \[
+    x_{ij} = x_{ij} \pm \theta
+    \]
+    onde \(\theta\) é o menor valor das células marcadas com \(-\);
+    \item \textbf{Repetir o processo} até que todos os \(\Delta_{ij} \geqslant  0\).
+\end{enumerate}
+
+% Conteúdo do Frame "Exemplo - Método u-v (MODI)"
+\subsubsection*{Exemplo - Método u-v (MODI)}
+\begin{table}[htbp]
+    \centering
+    \caption{Tabela de custos e solução inicial (via Vogel)}
+    \label{tab:modi_ex_inicio}
+    \begin{tabular}{c|ccc|c}
+    \hline
+    & D1 & D2 & D3 & Oferta \\ \hline
+    O1 & 6 & 8 & 10 & 20 \\
+    O2 & 7 & 11 & 11 & 15 \\
+    O3 & 4 & 5 & 12 & 25 \\ \hline
+    Demanda & 10 & 10 & 40 &  \\ \hline
+    \end{tabular}
+\end{table}
+
+\subsubsection*{Objetivo} % Convertido do \block
+A partir da solução inicial obtida pelo Método de Vogel, aplique o \textbf{Método MODI} para verificar se a solução é ótima e, se necessário, encontrar uma solução de custo menor.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{images/Exemplo 1 - MODI 1.jpg} 
+    \caption{Resolução exemplo 1 (MODI).}
+    \label{fig:exemplo_1_modi_imagem}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{images/Exemplo 1 - MODI 2.jpg} 
+    \caption{Continuação resolução exemplo 1 (MODI).}
+    \label{fig:continuacao_exemplo_1_modi_imagem}
+\end{figure}
+
+% Conteúdo do Frame "Exercício - Método u-v (MODI)"
+\subsubsection*{Exercício - Método u-v (MODI)}
+\begin{table}[htbp]
+    \centering
+    \caption{Tabela de custos e demandas (Exercício MODI)}
+    \label{tab:modi_exercicio}
+    \begin{tabular}{c|cccc|c}
+    \hline
+    & D1 & D2 & D3 & D4 & Oferta \\ \hline
+    O1 & 10 (5) & 2 (10) & 20 & 11 & 15 \\
+    O2 & 12 & 7 (5) & 9 (15) & 20 (5) & 25 \\
+    O3 & 4 & 14 & 16 & 19 (10) & 10 \\ \hline
+    Demanda & 5 & 15 & 15 & 15 & \\ \hline
+    \end{tabular}
+\end{table}
+
+\subsubsection*{Enunciado} % Convertido do \block
+Determine o plano de transporte ótimo utilizando o \textbf{Método de Aproximação de Vogel}, de modo a minimizar o custo total.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{images/Exercício 1 - MODI 1.jpg} 
+    \caption{Resolução exercicio 1 (MODI).}
+    \label{fig:exercicio_1_modi_imagem}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{images/Exercício 1 -MODI 2.jpg} 
+    \caption{Continuação resolução exercicio 1 (MODI).}
+    \label{fig:continuacao_exercicio_1_modi_imagem}
+\end{figure}
+
+% Conteúdo do Frame "Vantagens do Método u-v (MODI)"
+\subsubsection*{Vantagens do Método u-v (MODI)}
+\begin{itemize}
+    \item É o \textbf{método mais eficiente} para testar e melhorar soluções do problema do transporte;
+    \item Evita o uso completo do \textbf{Simplex}, tornando o processo mais direto;
+    \item Facilita a visualização da estrutura do problema;
+\end{itemize}
+
+% Conteúdo do Frame "Resumo do Método u-v (MODI)"
+\subsubsection*{Resumo do Método u-v (MODI)}
+\subsubsection*{Passos Principais} % Convertido do \block
+\begin{enumerate}
+    \item Obtenha uma solução inicial viável (Vogel, Canto Noroeste, etc.);
+    \item Calcule \(u_i\) e \(v_j\) com base nas células básicas;
+    \item Determine \(\Delta_{ij}\) para as não básicas;
+    \item Verifique se há \(\Delta_{ij} < 0\);
+    \item Ajuste as alocações por ciclos fechados até atingir a otimalidade.
+\end{enumerate}
+
+
+\subsection{Conclusão}
+\label{subsec:conclusao}
+
+% Conteúdo do Frame "Conclusão"
+\begin{itemize}
+    \item O problema do transporte é uma aplicação clássica da programação linear com grande relevância prática;
+    \item Seu estudo auxilia na compreensão de modelos de otimização com restrições de capacidade e custo;
+    \item Métodos como o de Vogel e o MODI permitem soluções eficientes e economicamente viáveis.
+\end{itemize}
+
+
+% Conteúdo do Problema do Transporte será inserido aqui.
+
+\chapter{O Problema da Atribuição}
+\label{chap:atribuicao}
+
+O Problema da Atribuição (PA) é um caso especial do Problema do Transporte, caracterizado pela necessidade de alocar um conjunto de $n$ agentes (ou recursos) a um conjunto de $n$ tarefas (ou atividades), de forma que cada agente execute exatamente uma tarefa e cada tarefa seja executada por exatamente um agente.
+
+\section{Definição e Aplicações}
+\label{sec:atrb_def}
+
+A definição formal do Problema da Atribuição consiste em encontrar a alocação biunívoca entre agentes e tarefas que minimize (ou maximize) o custo total da operação. O custo $c_{ij}$ representa o valor associado à designação do agente $i$ para a tarefa $j$.
+
+Este modelo é vastamente aplicado em cenários reais, tais como:
+\begin{itemize}
+    \item Alocação de funcionários a máquinas ou postos de trabalho;
+    \item Designação de motoristas a rotas de entrega (minimizando o tempo total);
+    \item Atribuição de professores a disciplinas;
+    \item Alocação de projetos a equipes de desenvolvimento.
+\end{itemize}
+
+\section{Modelo Matemático}
+\label{sec:atrb_modelo}
+
+Para formular o Problema da Atribuição como um Problema de Programação Linear, definem-se as variáveis de decisão, a função objetivo e as restrições.
+
+\textbf{Variáveis de Decisão:}
+Seja $x_{ij}$ uma variável binária:
+$$
+x_{ij} = \begin{cases}1 & \textrm{se o agente $i$ é atribuído à tarefa $j$} \\ 0 & \textrm{caso contrário} \end{cases}
+$$
+
+\textbf{Função Objetivo:}
+O objetivo é minimizar o custo total, que é a soma dos custos de todas as atribuições realizadas:
+\begin{equation}
+    \min Z = \sum_{i=1}^n \sum_{j=1}^n c_{ij} x_{ij}
+    \label{eq:atrb_fo}
+\end{equation}
+
+\textbf{Restrições:}
+As restrições garantem que cada agente faça exatamente uma tarefa e que cada tarefa seja feita por exatamente um agente.
+
+\begin{align}
+    \sum_{j=1}^n x_{ij} &= 1 \quad \forall i = 1, \dots, n \quad \text{(Cada agente faz 1 tarefa)} \label{eq:atrb_r1} \\
+    \sum_{i=1}^n x_{ij} &= 1 \quad \forall j = 1, \dots, n \quad \text{(Cada tarefa é feita por 1 agente)} \label{eq:atrb_r2} \\
+    x_{ij} &\in \{0, 1\} \quad \forall i, j \label{eq:atrb_r3}
+\end{align}
+
+\section{Métodos de Resolução}
+\label{sec:atrb_metodos}
+
+Embora o PA possa ser resolvido por métodos genéricos de Programação Linear, existem algoritmos muito mais eficientes e especializados para sua estrutura particular.
+
+\subsection{Resolução por Programação Linear (Simplex)}
+\label{subsec:atrb_simplex}
+
+O modelo apresentado na Seção \ref{sec:atrb_modelo} pode ser resolvido diretamente pelo método Simplex. No entanto, esta abordagem apresenta limitações significativas. O número de variáveis ($n^2$) e de restrições ($2n$) cresce rapidamente com o tamanho do problema.
+
+A construção e iteração do \textit{tableau} Simplex para problemas de grande porte torna-se computacionalmente inviável ou, no mínimo, ineficiente. Embora o Simplex funcione (e, devido à propriedade de unimodularidade total da matriz, garanta solução inteira mesmo relaxando $x_{ij} \geq 0$), ele não é o método preferencial na prática.
+
+\subsection{O Algoritmo Húngaro}
+\label{subsec:atrb_hungaro}
+
+O Algoritmo Húngaro é o método clássico e mais eficiente para resolver o Problema da Atribuição. Ele opera diretamente sobre a matriz de custos $C = [c_{ij}]$ e explora a propriedade de que a solução ótima não se altera se uma constante for somada ou subtraída de qualquer linha ou coluna da matriz de custos.
+
+O algoritmo busca transformar a matriz de custos em uma matriz que contenha zeros, de forma que seja possível encontrar uma atribuição completa (uma para cada agente) usando apenas as posições de custo zero. As etapas principais são:
+
+\begin{enumerate}
+    \item \textbf{Redução de Linhas:} Subtrair o menor valor de cada linha de todos os elementos daquela linha.
+    \item \textbf{Redução de Colunas:} Após a redução das linhas, subtrair o menor valor de cada coluna de todos os elementos daquela coluna.
+    \item \textbf{Verificação da Otimalidade (Cobertura por Linhas):} Tentar cobrir todos os zeros da matriz resultante com o menor número possível de linhas (horizontais ou verticais). Se o número mínimo de linhas for igual a $n$ (ordem da matriz), uma solução ótima foi encontrada.
+    \item \textbf{Iteração (Se não for ótimo):} Se o número de linhas for menor que $n$, encontrar o menor elemento \textit{não coberto} pelas linhas. Subtrair este valor de todos os elementos não cobertos e somá-lo a todos os elementos que estão na interseção de duas linhas de cobertura. Retornar ao Passo 3.
+\end{enumerate}
+
+Este método garante a otimalidade e é executado em tempo polinomial (tipicamente $O(n^3)$), sendo vastamente superior ao Simplex para esta classe de problema.
+
+\section{Variações do Problema de Atribuição}
+\label{sec:atrb_variacoes}
+
+O modelo clássico assume $n$ agentes para $n$ tarefas (problema balanceado). Na prática, cenários desbalanceados são comuns:
+
+\begin{itemize}
+    \item \textbf{Atribuição Desequilibrada (Agentes $\neq$ Tarefas):} Se o número de agentes for diferente do número de tarefas, o problema é "balanceado" pela adição de agentes ou tarefas fictícias (\textit{dummy}). Essas posições fictícias recebem custo zero (se a alocação não for obrigatória) ou um custo proibitivo (M).
+
+    \item \textbf{Problema de Atribuição Generalizada (GAP):} Esta é uma variante NP-difícil onde os agentes podem executar múltiplas tarefas e as tarefas podem ter demandas diferentes, respeitando-se restrições de capacidade (ex: tempo, orçamento) de cada agente. Este problema é mais complexo e exige métodos como \textit{branch and bound} ou heurísticas.
+\end{itemize}
+
+\section{Estudo de Caso: Resolução Manual e Algorítmica}
+\label{sec:atrb_exemplo}
+
+Considere a seguinte matriz de custos 3x3 (Tabela \ref{tab:atrb_custos}):
+
+\begin{table}[h]
+    \centering
+    \caption{Matriz de Custos do Exemplo de Atribuição}
+    \label{tab:atrb_custos}
+    \begin{tabular}{|c|c|c|c|}
+        \hline
+        & Tarefa 1 & Tarefa 2 & Tarefa 3 \\
+        \hline
+        Agente 1 & 15 & 20 & 17 \\
+        Agente 2 & 13 & 18 & 21 \\
+        Agente 3 & 19 & 14 & 16 \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\paragraph{Resolução por Enumeração (Força Bruta)}
+Para um problema 3x3, existem $3! = 6$ atribuições possíveis:
+\begin{itemize}
+    \item Atribuição 1 (A1-T1, A2-T2, A3-T3): $15 + 18 + 16 = 49$
+    \item Atribuição 2 (A1-T1, A2-T3, A3-T2): $15 + 21 + 14 = 50$
+    \item \textbf{Atribuição 3 (A1-T3, A2-T1, A3-T2): $17 + 13 + 14 = 44$}
+    \item Atribuição 4 (A1-T3, A2-T2, A3-T1): $17 + 18 + 19 = 54$
+    \item Atribuição 5 (A1-T2, A2-T1, A3-T3): $20 + 13 + 16 = 49$
+    \item Atribuição 6 (A1-T2, A2-T3, A3-T1): $20 + 21 + 19 = 60$
+\end{itemize}
+A solução ótima é a Atribuição 3, com custo total mínimo de \textbf{44}.
+
+\paragraph{Resolução pelo Algoritmo Húngaro}
+\begin{enumerate}
+    \item \textbf{Matriz Original:}
+    $$
+    \begin{bmatrix} 15 & 20 & 17 \\ 13 & 18 & 21 \\ 19 & 14 & 16 \end{bmatrix}
+    $$
+    \item \textbf{Passo 1: Redução de Linhas} (Subtrair 15, 13 e 14, respectivamente):
+    $$
+    \begin{bmatrix} 0 & 5 & 2 \\ 0 & 5 & 8 \\ 5 & 0 & 2 \end{bmatrix}
+    $$
+    \item \textbf{Passo 2: Redução de Colunas} (Subtrair 0, 0 e 2, respectivamente):
+    $$
+    \begin{bmatrix} 0 & 5 & 0 \\ 0 & 5 & 6 \\ 5 & 0 & 0 \end{bmatrix}
+    $$
+    \item \textbf{Passo 3: Alocação Ótima:} Nesta matriz, é possível encontrar uma alocação com 3 zeros em posições independentes (o número mínimo de linhas para cobrir os zeros é 3).
+    \begin{itemize}
+        \item A Linha 2 (Agente 2) só tem um zero na Coluna 1 $\rightarrow$ \textbf{Alocar A2-T1}.
+        \item Eliminando L2 e C1, a Linha 3 (Agente 3) só tem um zero na Coluna 2 $\rightarrow$ \textbf{Alocar A3-T2}.
+        \item Resta o Agente 1, que deve ser alocado à Tarefa 3 $\rightarrow$ \textbf{Alocar A1-T3}.
+    \end{itemize}
+\end{enumerate}
+A solução (A1-T3, A2-T1, A3-T2) corresponde exatamente ao custo mínimo de 44 (17 + 13 + 14) encontrado na enumeração.
+
+
+\chapter{O Problema do Menor Caminho}
+\label{chap:menor_caminho}
+
+O Problema do Menor Caminho (PCM), ou \textit{Shortest Path Problem} (SPP), é um dos problemas mais estudados e aplicados na teoria dos grafos e na Pesquisa Operacional. Ele é a base de muitas tecnologias modernas, desde sistemas de GPS até o roteamento de dados na internet.
+
+\section{Definição e Aplicações}
+\label{sec:pcm_def}
+
+Formalmente, o problema é definido em um grafo ponderado $G = (V, E)$, onde $V$ é o conjunto de vértices (nós) e $E$ é o conjunto de arestas (ou arcos, em grafos direcionados). Cada aresta $(i, j) \in E$ possui um peso (ou custo) $w_{ij}$ associado.
+
+Dado um nó de origem $s$ e um nó de destino $t$, o Problema do Menor Caminho consiste em encontrar a sequência de arestas (o caminho $P$) que conecta $s$ a $t$ de forma que a soma dos pesos das arestas nesse caminho seja minimizada.
+
+\begin{equation}
+    P^* = \arg\min_{P:\, s\to t} \sum_{(i,j)\in P} w_{ij}
+\end{equation}
+
+As aplicações são diversas e impactam diretamente o cotidiano:
+\begin{itemize}
+    \item \textbf{Logística e Transportes:} Aplicações como Google Maps e Waze usam algoritmos de menor caminho para encontrar a rota mais rápida (custo = tempo) ou mais curta (custo = distância).
+    % \includegraphics[width=0.4\linewidth]{images/googlemaps.png} % Exemplo de imagem
+    \item \textbf{Redes de Computadores:} Protocolos de roteamento, como o OSPF (Open Shortest Path First), determinam como os pacotes de dados devem trafegar na internet, minimizando a latência.
+    \item \textbf{Finanças:} Detecção de oportunidades de arbitragem em mercados (encontrar ciclos de custo negativo).
+    \item \textbf{Análise de Redes Sociais:} Medir o "grau de separação" entre duas pessoas.
+\end{itemize}
+
+Frequentemente, os algoritmos de PCM resolvem o problema da \textbf{Origem Única} (\textit{Single-Source Shortest Path} - SSSP), ou seja, encontram o caminho mínimo da origem $s$ para \textit{todos} os outros nós do grafo.
+
+\section{Modelo Matemático por Programação Linear}
+\label{sec:pcm_modelo}
+
+O PCM pode ser formulado como um Problema de Programação Linear, especificamente como um Problema de Fluxo de Custo Mínimo. A ideia é enviar 1 unidade de "fluxo" da origem $s$ para o destino $t$, minimizando o custo total desse envio.
+
+\textbf{Variáveis de Decisão:}
+$x_{ij} = 1$ se o arco $(i, j)$ for usado no caminho mínimo, e $0$ caso contrário.
+
+\textbf{Função Objetivo:}
+Minimizar o custo total do caminho percorrido pelo fluxo.
+\begin{equation}
+    \min Z = \sum_{(i,j) \in E} w_{ij} \cdot x_{ij}
+\end{equation}
+
+\textbf{Restrições (Conservação de Fluxo):}
+As restrições garantem que o fluxo de 1 unidade saia de $s$, chegue em $t$ e seja conservado em todos os nós intermediários. Para um grafo com origem $s$ e destino $t$:
+
+\begin{align}
+    \sum_{j} x_{sj} - \sum_{i} x_{is} &= 1 && \text{(Nó Origem s)} \label{eq:pcm_r1} \\
+    \sum_{j} x_{tj} - \sum_{i} x_{it} &= -1 && \text{(Nó Destino t)} \label{eq:pcm_r2} \\
+    \sum_{j} x_{kj} - \sum_{i} x_{ik} &= 0 && \forall k \neq s, t \text{ (Nós Intermediários)} \label{eq:pcm_r3} \\
+    x_{ij} &\ge 0 && \label{eq:pcm_r4}
+\end{align}
+
+Uma propriedade notável deste modelo, conhecida como \textbf{Total Unimodularidade} da matriz de restrições de fluxo em rede, garante que, se as ofertas e demandas (neste caso, 1 e -1) forem inteiras, a solução ótima do PPL (com $x_{ij} \geq 0$) será \textit{automaticamente} inteira (0 ou 1). Portanto, não é necessário impor a restrição $x_{ij} \in \{0, 1\}$.
+
+\section{Métodos de Resolução Algorítmicos}
+\label{sec:pcm_metodos}
+
+Embora a formulação PPL seja academicamente correta, na prática, o PCM é resolvido por algoritmos de grafos muito mais eficientes. Os dois principais algoritmos SSSP são Dijkstra e Bellman-Ford.
+
+\subsection{O Algoritmo de Dijkstra}
+\label{subsec:pcm_dijkstra}
+
+O Algoritmo de Dijkstra é uma abordagem "gulosa" (\textit{greedy}) clássica para resolver o problema do caminho mais curto de origem única (\textit{Single-Source Shortest Path}). Ele encontra o caminho de menor custo de um nó de origem $s$ para todos os outros nós $v$ em um grafo ponderado $G=(V, E)$.
+
+Para sua execução, o algoritmo mantém duas estruturas de dados principais para cada nó $v \in V$:
+\begin{itemize}
+    \item $d[v]$: A estimativa do custo (distância) do caminho mais curto de $s$ até $v$.
+    \item $\pi[v]$: O nó predecessor de $v$ no caminho mais curto encontrado até o momento.
+\end{itemize}
+
+O algoritmo funciona mantendo um conjunto de nós "fechados" (cujo caminho mais curto já foi determinado) e um conjunto de nós "abertos" (ainda não visitados).
+
+\subsubsection*{Passos Fundamentais do Algoritmo}
+
+\begin{enumerate}
+    \item \textbf{Inicialização:}
+    \begin{itemize}
+        \item Para cada nó $v$ no grafo, inicializa-se a distância como infinita e o predecessor como nulo:
+        \[
+        d[v] \leftarrow \infty, \quad \pi[v] \leftarrow \text{NULO}
+        \]
+        \item Define a distância da origem $s$ para ela mesma como zero:
+        \[
+        d[s] \leftarrow 0
+        \]
+    \end{itemize}
+
+    \item \textbf{Fila de Prioridade (Q):}
+    O conjunto de nós "abertos" $Q$ é implementado como uma \textbf{fila de prioridade} (Min-Heap), que armazena todos os nós do grafo, priorizados pelo seu valor $d[v]$.
+
+    \item \textbf{Loop Principal (Processamento):}
+    Enquanto a fila de prioridade $Q$ não estiver vazia:
+    \begin{enumerate}
+        \item Extrai de $Q$ o nó $u$ com o \textbf{menor valor} $d[u]$. Este nó $u$ é agora "fechado" (visitado), e sua distância $d[u]$ é considerada final.
+        \item Para cada vizinho $v$ de $u$ (ou seja, para cada aresta $(u,v)$ com peso $w(u,v)$):
+        \begin{itemize}
+            \item Executa o passo de \textbf{Relaxação (Relaxation)} da aresta $(u,v)$.
+        \end{itemize}
+    \end{enumerate}
+\end{enumerate}
+
+\subsubsection*{O Processo de Relaxação}
+
+O algoritmo realiza sucessivas "relaxações". A relaxação é o núcleo da operação e consiste em testar se o caminho até um nó $v$ \textit{passando por $u$} é melhor do que o caminho já conhecido até $v$.
+
+Dado que o nó $u$ acabou de ser fechado (com distância final $d[u]$), verificamos seus vizinhos $v$. Se o custo para chegar em $u$ somado ao custo da aresta de $u$ para $v$ for menor que o custo atual para chegar em $v$, atualizamos a rota para $v$:
+
+\begin{quotation}
+\textbf{Condição de Relaxação:} \\
+Se $d[u] + w(u,v) < d[v]$, então:
+\[
+\begin{aligned}
+d[v] &\leftarrow d[u] + w(u,v) \quad \text{(Atualiza a distância)} \\
+\pi[v] &\leftarrow u \quad \text{(Define u como o novo predecessor de v)}
+\end{aligned}
+\]
+\end{quotation}
+
+Ao atualizar $d[v]$, a posição de $v$ na fila de prioridade $Q$ é reajustada (operação \texttt{Decrease-Key}).
+
+\subsubsection*{Restrição Crítica e Complexidade}
+
+\textbf{Restrição Crítica:} O Algoritmo de Dijkstra só funciona corretamente se o grafo \textbf{não possuir arestas com pesos negativos}.
+
+A lógica "gulosa" do algoritmo baseia-se na premissa de que, uma vez que um nó $u$ é extraído da fila (sendo o mais próximo de $s$ entre os não visitados), seu caminho $d[u]$ é o mais curto definitivo. Se existisse uma aresta negativa em algum lugar do grafo, um caminho futuro (passando por essa aresta) poderia, eventualmente, encontrar um caminho total para $u$ que fosse mais curto do que $d[u]$, invalidando a decisão "gulosa" já tomada.
+Para grafos com arestas de peso negativo (mas sem ciclos negativos), deve-se utilizar o Algoritmo de \textbf{Bellman-Ford}.
+
+\textbf{Complexidade:} A eficiência do algoritmo depende da implementação da fila de prioridade $Q$.
+\begin{itemize}
+    \item Usando um \textbf{array simples}, a complexidade é $O(V^2)$, pois encontrar o mínimo leva $O(V)$ e isso é feito $V$ vezes.
+    \item Usando uma \textbf{fila de prioridade (Heap Binário)}, a complexidade total é \textbf{$O((V+E) \log V)$}, ou $O(E \log V)$ para grafos conectados (onde $E \ge V-1$).
+\end{itemize}
+
+\subsection{O Algoritmo de Bellman-Ford}
+\label{subsec:pcm_bellman}
+
+O Algoritmo de Bellman-Ford é uma abordagem robusta para o problema do caminho mais curto de origem única $s$, fundamentada em \textbf{Programação Dinâmica}. Em vez de ser "guloso" como Dijkstra, ele é mais "pessimista" e recalcula as distâncias iterativamente.
+
+Assim como Dijkstra, ele mantém duas estruturas de dados para cada nó $v \in V$:
+\begin{itemize}
+    \item $d[v]$: A estimativa do custo do caminho mais curto de $s$ até $v$.
+    \item $\pi[v]$: O nó predecessor de $v$ no caminho mais curto.
+\end{itemize}
+
+\subsubsection*{Passos Fundamentais do Algoritmo}
+
+\begin{enumerate}
+    \item \textbf{Inicialização:}
+    \begin{itemize}
+        \item A distância da origem $s$ é zero. Todas as outras são infinitas.
+        \[
+        \begin{aligned}
+        d[s] &\leftarrow 0 \\
+        d[v] &\leftarrow \infty, \quad \forall v \in V, v \ne s \\
+        \pi[v] &\leftarrow \text{NULO}, \quad \forall v \in V
+        \end{aligned}
+        \]
+    \end{itemize}
+    
+    \item \textbf{Iterações e Relaxação (Núcleo da PD):}
+    \begin{itemize}
+        \item O algoritmo "relaxa" \textbf{todas} as arestas do grafo por $V-1$ iterações (onde $V$ é o número de nós).
+        \item \textbf{Para $i$ de 1 até $|V|-1$:}
+        \begin{itemize}
+            \item \textbf{Para cada aresta $(u,v)$ com peso $w(u,v)$ em $E$:}
+            \begin{itemize}
+                \item Executa a Relaxação:
+                    \begin{quotation}
+                    Se $d[u] + w(u,v) < d[v]$, então:
+                    \[
+                    \begin{aligned}
+                    d[v] &\leftarrow d[u] + w(u,v) \\
+                    \pi[v] &\leftarrow u
+                    \end{aligned}
+                    \]
+                    \end{quotation}
+            \end{itemize}
+        \end{itemize}
+    \end{itemize}
+\end{enumerate}
+
+A lógica da Programação Dinâmica aqui é que, após a $k$-ésima iteração do loop principal, o algoritmo garante ter encontrado o caminho mais curto para todos os nós $v$ que utilizam, no máximo, $k$ arestas. Como o maior caminho mínimo possível sem um ciclo tem, no máximo, $V-1$ arestas, o loop de $V-1$ iterações garante que o caminho mínimo final (se não houver ciclos negativos) seja encontrado.
+
+\subsubsection*{Detecção de Ciclos Negativos}
+
+Sua principal vantagem é que ele \textbf{funciona com arestas de pesos negativos}. Além disso, ele é capaz de \textbf{detectar ciclos negativos} — um loop no grafo cujo custo total é negativo.
+
+A detecção ocorre em uma etapa final, após o término das $V-1$ iterações:
+
+\begin{enumerate}
+    \setcounter{enumi}{2} % Continua a numeração
+    \item \textbf{Verificação de Ciclos Negativos:}
+    \begin{itemize}
+        \item O algoritmo realiza uma $V$-ésima passagem por todas as arestas.
+        \item \textbf{Para cada aresta $(u,v)$ em $E$:}
+        \begin{itemize}
+            \item Se $d[u] + w(u,v) < d[v]$:
+            \item \textbf{Retorne FALSO} (um ciclo negativo foi detectado).
+        \end{itemize}
+        \item Se o loop terminar sem encontrar relaxações, \textbf{Retorne VERDADEIRO} (não há ciclos negativos).
+    \end{itemize}
+\end{enumerate}
+
+Se, após $V-1$ iterações (onde todos os caminhos simples já deveriam estar resolvidos), ainda for possível "relaxar" uma aresta na $V$-ésima passagem, isso prova que essa aresta faz parte ou é alcançável por um ciclo de custo negativo. Esse ciclo permitiria que o custo do caminho diminuísse indefinidamente (indo para $-\infty$), pois se pode percorrê-lo quantas vezes for necessário.
+
+\subsubsection*{Complexidade}
+
+A complexidade do Algoritmo de Bellman-Ford é fácil de analisar:
+\begin{itemize}
+    \item O loop principal executa $O(|V|)$ vezes (especificamente, $|V|-1$ vezes).
+    \item Dentro de cada iteração, ele verifica todas as arestas, o que leva $O(|E|)$ tempo.
+    \item A verificação de ciclo negativo também leva $O(|E|)$ tempo.
+\end{itemize}
+A complexidade total do algoritmo é, portanto, \textbf{$O(|V| \cdot |E|)$}. Isso o torna mais lento que o Dijkstra (que é $O(E \log V)$), mas é o preço pago por sua capacidade de lidar com pesos negativos e detectar ciclos negativos.
+
+\subsection{Comparativo dos Métodos}
+\label{subsec:pcm_comparativo}
+
+A escolha do algoritmo depende fundamentalmente da presença de custos negativos no grafo, conforme detalhado na Tabela \ref{tab:dijkstra_vs_bellman}.
+
+\begin{table}[h!]
+    \centering
+    \caption{Comparativo: Dijkstra vs. Bellman-Ford}
+    \label{tab:dijkstra_vs_bellman}
+    \begin{tabular}{|l|l|l|}
+        \hline
+        \textbf{Característica} & \textbf{Algoritmo de Dijkstra} & \textbf{Algoritmo de Bellman-Ford} \\ \hline
+        \textbf{Abordagem} & Gulosa (Greedy) & Programação Dinâmica \\
+        \textbf{Pesos Negativos?} & \textbf{Não} (falha) & \textbf{Sim} \\
+        \textbf{Ciclos Negativos?} & Não (não detecta) & \textbf{Sim} (detecta) \\
+        \textbf{Complexidade} & $O(E \log V)$ ou $O(V^2)$ & $O(V \cdot E)$ \\
+        \textbf{Quando usar?} & Grafos sem pesos negativos & Grafos com pesos negativos \\
+         & (Ex: GPS, redes OSPF) & (Ex: Detecção de arbitragem) \\ \hline
+    \end{tabular}
+\end{table}
+
+Em resumo, Dijkstra é significativamente mais rápido e preferível para a maioria das aplicações (como GPS, onde o tempo/distância nunca são negativos). Bellman-Ford é mais robusto e "seguro" para problemas onde custos negativos são uma possibilidade.
+
+\chapter{Conclusão}
+\label{chap:conclusao}
+
+Este trabalho explorou três problemas centrais da Pesquisa Operacional: Transporte, Atribuição e Menor Caminho. Foi demonstrado que, embora todos possam ser modelados como Problemas de Programação Linear, suas estruturas únicas levaram ao desenvolvimento de algoritmos especializados que superam em muito a eficiência de métodos genéricos como o Simplex.
+
+O Problema da Atribuição é eficientemente resolvido pelo Algoritmo Húngaro. O Problema do Menor Caminho, por sua vez, depende das características do grafo: o Algoritmo de Dijkstra é a escolha padrão pela sua rapidez, mas cede lugar ao Algoritmo de Bellman-Ford na presença de custos negativos.
+
+A compreensão desses modelos e de seus respectivos métodos de solução é fundamental para qualquer profissional de engenharia, ciência da computação ou administração, permitindo a otimização eficiente de recursos em sistemas logísticos, redes e alocações de tarefas.
+
+% -------------------------------------------------------------------
+% ELEMENTOS PÓS-TEXTUAIS
+% -------------------------------------------------------------------
+\clearpage
+\addcontentsline{toc}{chapter}{Referências} % Adiciona Referências ao Sumário
+\begin{thebibliography}{9}
+    \singlespacing % Referências são em espaço simples
+
+    % --- REFERÊNCIAS CONVERTIDAS ---
+
+    \bibitem{Arenales2015}
+    ARENALES, M. N. et al. \textbf{Pesquisa operacional}. 2. ed. Rio de Janeiro: Elsevier, 2015.
+
+    \bibitem{Bazaraa1990}
+    BAZARAA, M. S.; JARVIS, J. J.; SHERALI, H. D. \textbf{Linear Programming and Network Flows}. New York: John Wiley \& Sons, 1990.
+
+    \bibitem{Belfiore2013}
+    BELFIORE, Patrícia; FÁVERO, Luiz Paulo. \textbf{Pesquisa operacional para cursos de engenharia}. Rio de Janeiro: Elsevier Brasil, 2013.
+
+    \bibitem{ByjusVogel}
+    BYJU’S. Vogel’s Approximation Method. Disponível em: \url{https://byjus.com/maths/vogels-approximation-method/}.
+
+    \bibitem{Goldbarg2000}
+    GOLDBARG, M. C.; LUNA, H. P. L. \textbf{Otimização Combinatória e Programação Linear: Modelos e Algoritmos}. Rio de Janeiro: Campus, 2000.
+
+    \bibitem{Macambira2016}
+    MACAMBIRA, A. F. U. S.; MACULAN, N. et al. \textbf{Programação linear}. João Pessoa: Editora da UFPB, 2016.
+
+    \bibitem{Oliveira2016}
+    OLIVEIRA, Jéssica Moia de. O problema de transporte. 2016. Projeto Supervisionado II (Graduação em Matemática, Estatística e Computação Científica) – Universidade Estadual de Campinas, Instituto de Matemática, Estatística e Computação Científica, Campinas, 2016. Orientador: Aurelio Ribeiro Leite de Oliveira.
+
+    \bibitem{Taha2017}
+    TAHA, Hamdy A. \textbf{Operations research: an introduction}. 10. ed. Global Edition. Harlow: Pearson Education, 2017.
+
+    % --- Fim das referências ---
+    
+    % (Exemplos originais do template, se você ainda precisar deles)
+    % \bibitem{Hillier}
+    % HILLIER, Frederick S.; LIEBERMAN, Gerald J. \textbf{Introdução à pesquisa operacional}. 9. ed. Porto Alegre: AMGH, 2013.
+    %
+    % \bibitem{Kuhn}
+    % KUHN, Harold W. The Hungarian method for the assignment problem. \textbf{Naval Research Logistics Quarterly}, v. 2, n. 1-2, p. 83-97, 1955.
+
+\end{thebibliography}
+
+\end{document}
