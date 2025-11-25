@@ -1,0 +1,68 @@
+\begin{frame}
+\frametitle{Roteiro da Apresentação}
+\tableofcontents
+\end{frame}
+
+\section{Simplex Padrão vs. Revisado}
+
+\begin{frame}
+\frametitle{Contextualização e Problema}
+\begin{itemize}
+    \item \textbf{O Problema:} Problemas reais (como escala de tripulação e redes de energia) possuem milhões de variáveis ($n$) e milhares de restrições ($m$).
+    \item \textbf{Gargalo do Simplex Padrão:} 
+    \begin{itemize}
+        \item Atualiza toda a matriz $m \times n$ a cada iteração.
+        \item Gera \textit{Fill-in}: Matrizes esparsas tornam-se densas, estourando a memória.
+    \end{itemize}
+    \item \textbf{Solução:} Método Simplex Revisado.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Comparativo: Padrão vs. Revisado}
+\begin{table}[]
+\centering
+\small
+\begin{tabular}{p{0.45\textwidth}|p{0.45\textwidth}}
+\hline
+\textbf{Simplex Padrão (Tableau)} & \textbf{Simplex Revisado} \\ \hline
+Calcula $B^{-1}a_j$ para \textbf{todas} as colunas não-básicas. & \textbf{Computação sob Demanda:} Calcula dados apenas da variável candidata. \\ \hline
+Custo por iteração: $\approx O(m \cdot n)$. & Custo por iteração: $\approx O(m^2)$ (independe de $n$). \\ \hline
+Erros numéricos se propagam por todo o quadro. & Erros restritos à inversa $B^{-1}$ (pode ser resetada). \\ \hline
+\end{tabular}
+\end{table}
+\end{frame}
+
+\section{O Método Simplex Revisado}
+
+\begin{frame}
+\frametitle{A Filosofia "Sob Demanda"}
+No Revisado, trabalhamos com a matriz original $A$ e mantemos apenas a inversa da base $B^{-1}$.
+\vspace{0.3cm}
+\begin{block}{Passo 1: Multiplicadores Simplex (Dual)}
+    Em vez de atualizar custos, calculamos $\pi$ resolvendo o sistema:
+    \[ \pi^T = c_B^T B^{-1} \]
+\end{block}
+\begin{block}{Passo 2: Pricing (Quem entra?)}
+    Calculamos o custo reduzido apenas para verificar a entrada:
+    \[ \hat{c}_j = c_j - \pi^T a_j \]
+    Se $\hat{c}_k > 0$, a variável $x_k$ entra na base.
+\end{block}
+\end{frame}
+
+\begin{frame}
+\frametitle{Algoritmo: Passos Finais}
+\begin{block}{Passo 3: Coluna Atualizada}
+    Calculamos apenas a coluna da variável vencedora ($a_k$):
+    \[ \alpha = B^{-1} a_k \]
+\end{block}
+
+\begin{block}{Passo 4: Teste da Razão (Quem sai?)}
+    Usamos a solução atual $\bar{b} = B^{-1}b$:
+    \[ \theta = \min \left\{ \frac{\bar{b}_i}{\alpha_i} : \alpha_i > 0 \right\} \]
+\end{block}
+
+\begin{itemize}
+    \item \textbf{Atualização:} A nova inversa $B^{-1}_{nova}$ é obtida multiplicando a anterior por uma matriz elementar (Eta).
+\end{itemize}
+\end{frame}

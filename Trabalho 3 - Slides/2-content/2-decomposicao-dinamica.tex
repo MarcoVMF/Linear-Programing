@@ -1,0 +1,73 @@
+\section{Princípio de Decomposição}
+
+\begin{frame}
+\frametitle{Estrutura Bloco-Angular}
+Quando o problema é grande demais até para o Revisado, usamos a \textbf{Decomposição de Dantzig-Wolfe}. Isso ocorre em estruturas descentralizadas (ex: várias fábricas compartilhando um orçamento).
+
+% AQUI ESTAVA O ERRO PROVAVELMENTE (Falta de \] ou $)
+\[
+A = \begin{bmatrix}
+L_1 & L_2 & \dots & L_K \\ \hline
+A_1 & 0 & \dots & 0 \\
+0 & A_2 & \dots & 0 \\
+\vdots & \vdots & \ddots & \vdots \\
+0 & 0 & \dots & A_K
+\end{bmatrix}
+\]
+
+Onde $L$ são restrições globais e $A_k$ são blocos independentes.
+\end{frame}
+
+\begin{frame}
+\frametitle{Ciclo de Geração de Colunas}
+O problema é dividido em dois níveis (Mestre e Subproblemas):
+
+\begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+        \textbf{1. Problema Mestre (Sede)}
+        \begin{itemize}
+            \item Gerencia as restrições globais ($L$).
+            \item Envia "preços sombra" ($\pi$) para os subproblemas.
+            \item Recebe novas colunas (propostas).
+        \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+        \textbf{2. Subproblemas (Divisões)}
+        \begin{itemize}
+            \item Otimizam localmente baseados nos preços recebidos.
+            \item $\min (c_k - \pi^T L_k)x_k$
+            \item Enviam a solução ótima ao Mestre.
+        \end{itemize}
+    \end{column}
+\end{columns}
+\end{frame}
+
+\section{Dinâmica de Sala}
+
+\begin{frame}
+\frametitle{Exercício Prático - Vamos resolver juntos!}
+\textbf{Problema:} $\max Z = 3x_1 + 5x_2$ sujeito a:
+\[ \begin{cases} x_1 \le 4 \\ 2x_2 \le 12 \\ 3x_1 + 2x_2 \le 18 \end{cases} \]
+
+\vspace{0.3cm}
+\textbf{Iteração 1 (Base Inicial = Identidade):}
+\begin{itemize}
+    \item $c_B = [0, 0, 0]$, logo Multiplicadores $\pi = [0, 0, 0]$.
+    \item \textbf{Pricing:} 
+    \begin{itemize}
+        \item $\hat{c}_1 = 3 - [0]\cdot a_1 = 3$
+        \item $\hat{c}_2 = 5 - [0]\cdot a_2 = 5$ \textbf{(MAIOR $\to$ $x_2$ entra)}
+    \end{itemize}
+    \item \textbf{Coluna $x_2$ na base:} $\alpha = [0, 2, 2]^T$.
+    \item \textbf{Razão:} $\min \{ \infty, 12/2=6, 18/2=9 \}$. \textbf{Sai a var. da linha 2}.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Conclusão}
+\begin{itemize}
+    \item O \textbf{Simplex Revisado} altera o paradigma de "processamento em lote" para "processamento sob demanda".
+    \item A \textbf{Decomposição} permite otimizar sistemas descentralizados massivos.
+    \item Ambos são a base dos solvers modernos (Gurobi, CPLEX).
+\end{itemize}
+\end{frame}
